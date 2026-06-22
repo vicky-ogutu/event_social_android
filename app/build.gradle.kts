@@ -1,15 +1,14 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
-}
+    id("com.android.application")
+//    id("org.jetbrains.kotlin.android")        // ✅ only this one
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 
+    alias(libs.plugins.compose.compiler)
+}
 android {
     namespace = "com.example.invyte"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.invyte"
@@ -31,9 +30,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         compose = true
     }
@@ -63,8 +63,30 @@ dependencies {
     // Retrofit Networking
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     // Coroutines for asynchronous threads
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    //navigation
     implementation("androidx.navigation:navigation-compose:2.9.8")
+
+
+// Hilt
+    implementation("com.google.dagger:hilt-android:2.59.2")
+
+   ksp("com.google.dagger:hilt-compiler:2.59.2")   // use ksp, not kapt
+    //add("ksp", "com.google.dagger:hilt-compiler:2.59.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
+
+
+
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.2.1")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+
 }
