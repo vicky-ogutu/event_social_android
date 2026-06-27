@@ -18,6 +18,13 @@ import com.example.invyte.ui.auth.LoginScreen
 import com.example.invyte.ui.auth.RegisterScreen
 import com.example.invyte.ui.dashboard.ConsumerHomeScreen
 import com.example.invyte.ui.dashboard.VendorHomeScreen
+import com.example.invyte.ui.event.EventCreateScreen
+import com.example.invyte.ui.event.EventDetailScreen
+import com.example.invyte.ui.event.MyEventsScreen
+import com.example.invyte.ui.profile.ProfileScreen
+import com.example.invyte.ui.vendor.PortfolioScreen
+import com.example.invyte.ui.vendor.ServicesScreen
+import com.example.invyte.ui.vendor.VendorProfileScreen
 import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
@@ -52,15 +59,61 @@ fun NavGraph(
         composable("register") {
             RegisterScreen(navController)
         }
+//        composable(
+//            route = "dashboard/{dashboardName}",
+//            arguments = listOf(navArgument("dashboardName") { type = NavType.StringType })
+//        ) { backStackEntry ->
+//            val dashboardName = backStackEntry.arguments?.getString("dashboardName") ?: "consumer_home"
+//            when (dashboardName) {
+//                "vendor_home" -> VendorHomeScreen(navController)
+//                else -> ConsumerHomeScreen(navController)
+//            }
+//        }
+
         composable(
             route = "dashboard/{dashboardName}",
             arguments = listOf(navArgument("dashboardName") { type = NavType.StringType })
         ) { backStackEntry ->
             val dashboardName = backStackEntry.arguments?.getString("dashboardName") ?: "consumer_home"
-            when (dashboardName) {
-                "vendor_home" -> VendorHomeScreen(navController)
-                else -> ConsumerHomeScreen(navController)
+            when {
+                // Any vendor-related dashboard goes to VendorHomeScreen
+                dashboardName.startsWith("vendor") -> VendorHomeScreen(navController)
+               // dashboardName == "admin_dashboard" -> AdminHomeScreen(navController) // if you have one
+                else -> ConsumerHomeScreen(navController) // default consumer
             }
+        }
+
+
+
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+        composable("vendor_profile") {
+            VendorProfileScreen(navController, isEdit = false)
+        }
+        composable("vendor_profile_edit") {
+            VendorProfileScreen(navController, isEdit = true)
+        }
+        composable("services") {
+            ServicesScreen(navController)
+        }
+        composable("portfolio") {
+            PortfolioScreen(navController)
+        }
+
+        composable("my_events") {
+            MyEventsScreen(navController)
+        }
+        composable("event_detail/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+            EventDetailScreen(navController, eventId)
+        }
+        composable("create_event") {
+            EventCreateScreen(navController)
+        }
+        composable("edit_event/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            EventCreateScreen(navController, eventId)
         }
     }
 }

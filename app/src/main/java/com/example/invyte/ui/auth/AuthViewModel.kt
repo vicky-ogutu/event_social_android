@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.LoginRequest
 import com.example.invyte.data.model.RegisterRequest
 import com.example.invyte.data.repository.AuthRepository
+import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ sealed class AuthUiState {
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-     val repository: AuthRepository
+     val repository: AuthRepository,
+     val tokenManager: TokenManager
 
 ) : ViewModel() {
 
@@ -38,7 +40,10 @@ class AuthViewModel @Inject constructor(
                 if (response.success && response.data != null) {
                     val token = response.data.token ?: throw Exception("Token missing")
                     val user = response.data.user ?: throw Exception("User data missing")
-                    repository.saveAuthData(token, user.userType)
+                    repository.saveAuthData(
+                        token, user.userType,
+                        user = user
+                    )
                     _uiState.value = AuthUiState.Success(
                         dashboard = response.data.dashboard ?: "${user.userType}_home",
                         userType = user.userType
@@ -67,7 +72,10 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
+    suspend fun logout() {
+        tokenManager.clear()
+        // optionally clear any user data stored in repository
+    }
     fun resetState() {
         _uiState.value = AuthUiState.Idle
     }
