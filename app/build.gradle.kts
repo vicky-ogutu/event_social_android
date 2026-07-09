@@ -48,6 +48,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.transport.api)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,20 +77,21 @@ dependencies {
 
 // Hilt
     implementation("com.google.dagger:hilt-android:2.59.2")
-
-   ksp("com.google.dagger:hilt-compiler:2.59.2")   // use ksp, not kapt
+    ksp("com.google.dagger:hilt-compiler:2.59.2")   // use ksp, not kapt
     //add("ksp", "com.google.dagger:hilt-compiler:2.59.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
-
-
-
-
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.2.1")
-
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    // Coil for image loading
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // For handling image picker (optional, but recommended)
+    implementation("com.github.kittinunf.fuel:fuel-android:2.3.1") // not needed if using built-in
 
 
 }
