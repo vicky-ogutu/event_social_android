@@ -22,5 +22,15 @@ data class User(
     @SerializedName("wallet_balance")
     val walletBalance: String,
     @SerializedName("total_spent")
-    val totalSpent: String
+    val totalSpent: String,
+
+    val vendor: VendorInfo? = null
+)
+
+data class VendorInfo(
+    @SerializedName("business_name") val businessName: String?,
+    @SerializedName("is_approved") val isApproved: Int?,
+    @SerializedName("stripe_onboarding_complete") val stripeOnboardingComplete: Int?,
+    @SerializedName("total_earnings") val totalEarnings: String?,
+    @SerializedName("completed_jobs") val completedJobs: Int?
 )

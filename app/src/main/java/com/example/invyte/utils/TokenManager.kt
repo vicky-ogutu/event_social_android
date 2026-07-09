@@ -18,6 +18,7 @@ import javax.inject.Singleton
 @Singleton
 class TokenManager @Inject constructor(@ApplicationContext private val context: Context) {
 
+
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("auth")
 
     companion object {

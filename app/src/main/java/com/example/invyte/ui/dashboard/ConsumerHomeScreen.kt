@@ -32,6 +32,7 @@ import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
 import com.google.android.datatransport.Event
 import kotlinx.coroutines.launch
+import com.example.invyte.ui.common.EventCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,62 +175,62 @@ fun ConsumerHomeScreen(
     }
 }
 
-@Composable
-fun EventCard(event: com.example.invyte.data.model.Event, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
-    ) {
-        Column {
-            // Cover image
-//            AsyncImage(
-//                model = event.coverImage ?: "https://via.placeholder.com/400x200?text=Event",
-//                contentDescription = "Cover",
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(180.dp)
-//                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-//                contentScale = ContentScale.Crop
-//            )
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = event.eventName,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = event.eventDescription ?: "No description",
-                    color = Color.Gray,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = event.eventDate, color = Color.Gray, fontSize = 12.sp)
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = event.venueAddress ?: "Online", color = Color.Gray, fontSize = 12.sp)
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFFE91E63), modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = "${event.likeCount ?: 0}", color = Color.Gray, fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun EventCard(event: com.example.invyte.data.model.Event, onClick: () -> Unit) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onClick() },
+//        shape = RoundedCornerShape(16.dp),
+//        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
+//    ) {
+//        Column {
+//            // Cover image
+////            AsyncImage(
+////                model = event.coverImage ?: "https://via.placeholder.com/400x200?text=Event",
+////                contentDescription = "Cover",
+////                modifier = Modifier
+////                    .fillMaxWidth()
+////                    .height(180.dp)
+////                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+////                contentScale = ContentScale.Crop
+////            )
+//            Column(modifier = Modifier.padding(16.dp)) {
+//                Text(
+//                    text = event.eventName,
+//                    style = MaterialTheme.typography.titleLarge,
+//                    color = Color.White,
+//                    fontWeight = FontWeight.Bold
+//                )
+//                Spacer(modifier = Modifier.height(4.dp))
+//                Text(
+//                    text = event.eventDescription ?: "No description",
+//                    color = Color.Gray,
+//                    maxLines = 2,
+//                    overflow = TextOverflow.Ellipsis
+//                )
+//                Spacer(modifier = Modifier.height(8.dp))
+//                Row(
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    modifier = Modifier.fillMaxWidth()
+//                ) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        Text(text = event.eventDate, color = Color.Gray, fontSize = 12.sp)
+//                    }
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        Text(text = event.venueAddress ?: "Online", color = Color.Gray, fontSize = 12.sp)
+//                    }
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFFE91E63), modifier = Modifier.size(16.dp))
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                        Text(text = "${event.likeCount ?: 0}", color = Color.Gray, fontSize = 12.sp)
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

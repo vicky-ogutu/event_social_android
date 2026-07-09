@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.invyte.ui.dashboard.EventCard
+import com.example.invyte.ui.common.EventCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

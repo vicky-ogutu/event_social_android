@@ -1,4 +1,5 @@
 package com.example.invyte.ui.vendor
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,12 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.invyte.data.model.Service
 import com.example.invyte.data.model.ServiceRequest
 import com.example.invyte.ui.theme.FieldBorder
 import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
+import kotlin.String
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun ServicesScreen(
     navController: NavController,
@@ -29,77 +32,67 @@ fun ServicesScreen(
 ) {
     val servicesState by viewModel.servicesState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
-    var editingService by remember { mutableStateOf<Pair<Int, ServiceRequest>?>(null) }
+    var editingService by remember { mutableStateOf<Service?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.getServices()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("My Services", color = Color.White) },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A1A1A))
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { showAddDialog = true },
-                containerColor = Color(0xFFE91E63),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Service", tint = Color.White)
-            }
-        }
-    ) { paddingValues ->
-        when (servicesState) {
+    val currentState = servicesState
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF121212))
+    ) {
+        when (currentState) {
             is ServicesUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
             is ServicesUiState.ServicesLoaded -> {
-                val services = (servicesState as ServicesUiState.ServicesLoaded).services
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFF121212))
-                        .padding(paddingValues)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(services) { service ->
-                        ServiceCard(
-                            service = service,
-                            onEdit = {
-                                editingService = service.id to ServiceRequest(
-                                    category = service.category,
-                                    price = service.price,
-                                    description = service.description
-                                )
-                            },
-                            onDelete = {
-                                viewModel.deleteService(service.id)
-                            }
-                        )
+                val services = currentState.services
+                if (services.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No services added yet.", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(services) { service ->
+                            ServiceCard(
+                                service = service,
+                                onEdit = { editingService = service },
+                                onDelete = { viewModel.deleteService(service.id) }
+                            )
+                        }
                     }
                 }
             }
             is ServicesUiState.Error -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Error: ${(servicesState as ServicesUiState.Error).message}", color = Color.Red)
+                    Text("Error: ${currentState.message}", color = Color.Red)
                 }
             }
             else -> Unit
         }
+
+        FloatingActionButton(
+            onClick = { showAddDialog = true },
+            containerColor = Color(0xFFE91E63),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add Service", tint = Color.White)
+        }
     }
 
-    // Add/Edit Service Dialog
     if (showAddDialog) {
         ServiceDialog(
             onDismiss = { showAddDialog = false },
@@ -110,21 +103,22 @@ fun ServicesScreen(
         )
     }
 
-    editingService?.let { (id, request) ->
+    editingService?.let { service ->
         ServiceDialog(
-            initialRequest = request,
+            initialService = service,
             onDismiss = { editingService = null },
-            onConfirm = { updatedRequest ->
-                viewModel.updateService(id, updatedRequest)
+            onConfirm = { request ->
+                viewModel.updateService(service.id, request)
                 editingService = null
             }
         )
     }
 }
 
+// ---------- Service Card (null‑safe) ----------
 @Composable
 fun ServiceCard(
-    service: com.example.invyte.data.model.Service,
+    service: Service,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -141,8 +135,22 @@ fun ServiceCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = service.category, style = MaterialTheme.typography.titleMedium, color = Color.White)
-                Text(text = "Price: ₹${service.price}", color = Color.Gray)
+                // serviceName is non‑null, but we still use a safe fallback
+                Text(
+                    text = service.serviceName ?: "Unnamed",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+                Text(
+                    text = "Price: KSH ${service.basePrice ?: 0.0}",
+                    color = Color.Gray
+                )
+                Text(
+                    text = "Category: ${service.serviceName ?: 0}",
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
+                // description can be null – show only if present
                 service.description?.let {
                     Text(text = it, color = Color.Gray, fontSize = 12.sp)
                 }
@@ -159,25 +167,27 @@ fun ServiceCard(
     }
 }
 
+// ---------- Service Dialog (correct fields, null‑safe) ----------
 @Composable
 fun ServiceDialog(
-    initialRequest: ServiceRequest? = null,
+    initialService: Service? = null,   // null = add mode
     onDismiss: () -> Unit,
     onConfirm: (ServiceRequest) -> Unit
 ) {
-    var category by remember { mutableStateOf(initialRequest?.category ?: "") }
-    var price by remember { mutableStateOf(initialRequest?.price?.toString() ?: "") }
-    var description by remember { mutableStateOf(initialRequest?.description ?: "") }
+    var categoryId by remember { mutableStateOf(initialService?.categoryId?.toString() ?: "") }
+    var serviceName by remember { mutableStateOf(initialService?.serviceName ?: "") }
+    var description by remember { mutableStateOf(initialService?.description ?: "") }
+    var basePrice by remember { mutableStateOf(initialService?.basePrice?.toString() ?: "") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initialRequest == null) "Add Service" else "Edit Service", color = Color.White) },
+        title = { Text(if (initialService == null) "Add Service" else "Edit Service", color = Color.White) },
         text = {
             Column {
                 OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = { Text("Category", color = Color.Gray) },
+                    value = categoryId,
+                    onValueChange = { categoryId = it },
+                    label = { Text("Category ID", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = colors(
                         focusedIndicatorColor = PrimaryPink,
@@ -189,10 +199,11 @@ fun ServiceDialog(
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 OutlinedTextField(
-                    value = price,
-                    onValueChange = { price = it },
-                    label = { Text("Price", color = Color.Gray) },
+                    value = serviceName,
+                    onValueChange = { serviceName = it },
+                    label = { Text("Service Name", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = colors(
                         focusedIndicatorColor = PrimaryPink,
@@ -204,10 +215,27 @@ fun ServiceDialog(
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
+
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description (optional)", color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = colors(
+                        focusedIndicatorColor = PrimaryPink,
+                        unfocusedIndicatorColor = FieldBorder,
+                        focusedLabelColor = TextWhite,
+                        unfocusedLabelColor = FieldBorder,
+                        focusedTextColor = TextWhite,
+                        unfocusedTextColor = TextWhite
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = basePrice,
+                    onValueChange = { basePrice = it },
+                    label = { Text("Base Price (KSH)", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = colors(
                         focusedIndicatorColor = PrimaryPink,
@@ -223,14 +251,22 @@ fun ServiceDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val priceDouble = price.toDoubleOrNull()
-                    if (category.isNotBlank() && priceDouble != null) {
-                        onConfirm(ServiceRequest(category, priceDouble, description.takeIf { it.isNotBlank() }))
+                    val catId = categoryId.toIntOrNull()
+                    val price = basePrice.toDoubleOrNull()
+                    if (catId != null && serviceName.isNotBlank() && price != null) {
+                        onConfirm(
+                            ServiceRequest(
+                                categoryId = catId,
+                                serviceName = serviceName.trim(),
+                                description = description.takeIf { it.isNotBlank() },
+                                basePrice = price
+                            )
+                        )
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
             ) {
-                Text(if (initialRequest == null) "Add" else "Update")
+                Text(if (initialService == null) "Add" else "Update")
             }
         },
         dismissButton = {

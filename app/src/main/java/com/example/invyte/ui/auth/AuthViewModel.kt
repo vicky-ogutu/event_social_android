@@ -72,8 +72,10 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
     suspend fun logout() {
         tokenManager.clear()
+        repository.clear()
         // optionally clear any user data stored in repository
     }
     fun resetState() {
@@ -81,6 +83,7 @@ class AuthViewModel @Inject constructor(
     }
 
     suspend fun clearSession() {
+        tokenManager.clear()
         repository.clear()
     }
 }
