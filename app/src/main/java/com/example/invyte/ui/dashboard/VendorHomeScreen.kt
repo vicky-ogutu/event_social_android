@@ -183,8 +183,8 @@ fun VendorHomeScreen(
         when (selectedTab) {
             0 -> VendorDashboardContent(paddingValues, navController)
             1 -> MyEventsContent(paddingValues, navController, myEventsState)
-            2 -> ServicesScreen(navController)
-            3 -> PortfolioScreen(navController)
+            2 -> ServicesScreen(navController, paddingValues)   // ← add paddingValues
+            3 -> PortfolioScreen(navController, paddingValues) // ← add paddingValues
         }
     }
 }

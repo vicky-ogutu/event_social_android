@@ -15,6 +15,7 @@ import androidx.compose.material3.TextFieldDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -35,19 +36,16 @@ import java.io.FileOutputStream
 @Composable
 fun PortfolioScreen(
     navController: NavController,
+    paddingValues: PaddingValues = PaddingValues(0.dp),  // ← now accepts padding
     viewModel: VendorViewModel = hiltViewModel()
 ) {
     val portfolioState by viewModel.portfolioState.collectAsState()
     val context = LocalContext.current
 
-    // Capture state for safe smart‑casting
-    val currentState = portfolioState
-
     // State for image picking
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var showUploadDialog by remember { mutableStateOf(false) }
 
-    // Image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -57,17 +55,18 @@ fun PortfolioScreen(
         }
     }
 
-    // Load portfolio on first composition
     LaunchedEffect(Unit) {
         viewModel.getPortfolio()
     }
 
+    // Apply the padding to the entire screen
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF121212))
+            .padding(paddingValues)   // ← prevents overlap with top bar
     ) {
-        when (currentState) {
+        when (val currentState = portfolioState) {
             is PortfolioUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -96,10 +95,10 @@ fun PortfolioScreen(
                     Text("Error: ${currentState.message}", color = Color.Red)
                 }
             }
-            else -> Unit // Idle state – do nothing
+            else -> Unit
         }
 
-        // FAB to upload new portfolio item
+        // FAB
         FloatingActionButton(
             onClick = { imagePickerLauncher.launch("image/*") },
             containerColor = Color(0xFFE91E63),
@@ -112,7 +111,7 @@ fun PortfolioScreen(
         }
     }
 
-    // Upload dialog
+    // Upload dialog (unchanged)
     if (showUploadDialog && selectedImageUri != null) {
         var caption by remember { mutableStateOf("") }
         AlertDialog(
@@ -145,7 +144,6 @@ fun PortfolioScreen(
                 Button(
                     onClick = {
                         val uri = selectedImageUri!!
-                        // Convert URI to file
                         val file = File(context.cacheDir, "portfolio_${System.currentTimeMillis()}.jpg")
                         context.contentResolver.openInputStream(uri)?.use { input ->
                             FileOutputStream(file).use { output ->
