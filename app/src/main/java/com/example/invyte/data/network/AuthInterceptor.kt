@@ -34,8 +34,8 @@ class AuthInterceptor @Inject constructor(
         val originalRequest = chain.request()
 
         //  Block to get the actual token String from the Flow
-        val token = runBlocking {
-            tokenManager.getToken().firstOrNull()
+        val token: String? = runBlocking {
+            tokenManager.getTokenFlow().firstOrNull()
         }
         Log.d("AuthInterceptor", "Retrieved token: $token")   // Log full token
 

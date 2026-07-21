@@ -21,6 +21,9 @@ data class Service(
     val slug: String? = null
 )
 
+
+
+
 data class ServiceRequest(
     @SerializedName("category_id") val categoryId: Int,
     @SerializedName("service_name") val serviceName: String,

@@ -52,6 +52,13 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.transport.api)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.runtime)
+    implementation(libs.identity.doctypes.jvm)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,6 +99,13 @@ dependencies {
 
     // For handling image picker (optional, but recommended)
     implementation("com.github.kittinunf.fuel:fuel-android:2.3.1") // not needed if using built-in
+
+
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1") // optional, for HLS
+
+    implementation("io.socket:socket.io-client:2.1.0") // or latest
+
 
 
 }

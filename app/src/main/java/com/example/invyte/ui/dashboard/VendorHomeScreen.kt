@@ -31,224 +31,89 @@ import com.example.invyte.ui.vendor.VendorViewModel
 import com.example.invyte.ui.vendor.VendorProfileUiState
 import kotlinx.coroutines.launch
 import com.example.invyte.ui.common.EventCard
+import com.example.invyte.ui.vendor.VendorBookingCard
+import com.example.invyte.ui.vendor.VendorBookingUiState
+import com.example.invyte.ui.vendor.VendorBookingViewModel
+
+// Tab enum
+enum class VendorTab(val title: String) {
+    EVENTS("Events"),
+    SERVICES("Services"),
+    PORTFOLIO("Portfolio"),
+    BOOKINGS("Bookings")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VendorHomeScreen(
     navController: NavController,
-    vendorViewModel: VendorViewModel = hiltViewModel(),
     eventViewModel: EventViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
+    bookingViewModel: VendorBookingViewModel = hiltViewModel()
 ) {
-    val coroutineScope = rememberCoroutineScope()
+    val myEventsState by eventViewModel.eventsState.collectAsState()
+    var selectedTab by remember { mutableStateOf(VendorTab.EVENTS) }
+    val tabs = VendorTab.values()
 
-    // Get the stored user from AuthViewModel's repository
-    val authRepository = authViewModel.repository
-    val currentUser by authRepository.getUser().collectAsState(initial = null)
-
-    // State for my events
-    val myEventsState by eventViewModel.myEventsState.collectAsState()
-
-    // Track if we've finished checking the profile
-    var hasCheckedProfile by remember { mutableStateOf(false) }
-
-    // Fetch events on load
+    // Load events for the vendor when the Events tab is selected
     LaunchedEffect(Unit) {
+        //eventViewModel.listMyEvents()
         eventViewModel.getMyEvents()
+        // you need to implement this in EventViewModel
     }
-
-    // Wait for user data to be loaded
-    LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            hasCheckedProfile = true
-        }
-    }
-
-    // Show loading indicator while checking
-    if (!hasCheckedProfile || currentUser == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    // Determine if vendor profile exists (based on stored user data)
-    val hasVendorProfile = currentUser!!.vendor != null &&
-            !currentUser!!.vendor!!.businessName.isNullOrBlank()
-
-    // If no vendor profile, show a prompt to create one + logout button
-    if (!hasVendorProfile) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Please set up your vendor profile first.",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = { navController.navigate("vendor_profile") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Create Profile", color = Color.White)
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-                // ✅ NEW: Logout button
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            authViewModel.clearSession()
-                            navController.navigate("login") {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Icon(Icons.Default.Logout, contentDescription = null, tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Logout", color = Color.White)
-                }
-            }
-        }
-        return
-    }
-
-    // ---------- Vendor Dashboard with Tabs ----------
-    val tabs = listOf("Dashboard", "My Events", "Services", "Portfolio")
-    var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF1A1A1A),
-                contentColor = Color.White
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    NavigationBarItem(
-                        icon = {
-                            when (index) {
-                                0 -> Icon(Icons.Default.Home, contentDescription = title)
-                                1 -> Icon(Icons.Default.Event, contentDescription = title)
-                                2 -> Icon(Icons.Default.List, contentDescription = title)
-                                3 -> Icon(Icons.Default.Image, contentDescription = title)
-                            }
-                        },
-                        label = { Text(title) },
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFFE91E63),
-                            unselectedIconColor = Color.Gray
-                        )
-                    )
-                }
-            }
-        },
         topBar = {
             TopAppBar(
-                title = { Text("Vendor Dashboard", color = Color.White) },
-                actions = {
-                    // Profile
-                    IconButton(onClick = { navController.navigate("profile") }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
-                    }
-                    // Create Event
-                    IconButton(onClick = { navController.navigate("create_event") }) {
-                        Icon(Icons.Default.Add, contentDescription = "Create Event", tint = Color.White)
-                    }
-                    // Logout
-                    IconButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                authViewModel.clearSession()
-                                navController.navigate("login") {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(Icons.Default.Logout, contentDescription = "Logout", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A1A1A))
+                title = { Text("Vendor Dashboard") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1A1A1A),
+                    titleContentColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
-        when (selectedTab) {
-            0 -> VendorDashboardContent(paddingValues, navController)
-            1 -> MyEventsContent(paddingValues, navController, myEventsState)
-            2 -> ServicesScreen(navController, paddingValues)   // ← add paddingValues
-            3 -> PortfolioScreen(navController, paddingValues) // ← add paddingValues
-        }
-    }
-}
-
-// ---------- Dashboard Tab ----------
-@Composable
-fun VendorDashboardContent(
-    paddingValues: PaddingValues,
-    navController: NavController
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .padding(paddingValues)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Text(
-                text = "Welcome to your Vendor Dashboard",
-                style = MaterialTheme.typography.titleLarge,
-                color = Color.White
-            )
-        }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF121212))
+                .padding(paddingValues)
+        ) {
+            // Tab Row
+            TabRow(
+                selectedTabIndex = selectedTab.ordinal,
+                containerColor = Color(0xFF1A1A1A),
+                contentColor = Color.White
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Quick Actions", color = Color.White, style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(
-                            onClick = { navController.navigate("create_event") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Create Event")
-                        }
-                        Button(
-                            onClick = { navController.navigate("services") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Services")
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = { navController.navigate("portfolio") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Portfolio")
-                    }
+                tabs.forEachIndexed { index, tab ->
+                    Tab(
+                        selected = selectedTab.ordinal == index,
+                        onClick = { selectedTab = tab },
+                        text = { Text(tab.title, color = Color.White) },
+                        selectedContentColor = Color(0xFFE91E63),
+                        unselectedContentColor = Color.Gray
+                    )
                 }
             }
+
+            // Content based on selected tab
+            when (selectedTab) {
+                VendorTab.EVENTS -> MyEventsContent(
+                    paddingValues = PaddingValues(0.dp),
+                    navController = navController,
+                    myEventsState = myEventsState
+                )
+                VendorTab.SERVICES -> ServicesContent(
+                    navController = navController
+                )
+                VendorTab.PORTFOLIO -> PortfolioContent(
+                    navController = navController
+                )
+                VendorTab.BOOKINGS -> VendorBookingScreen(
+                    navController = navController,
+                    viewModel = bookingViewModel
+                )
+            }
         }
-        // Add more stats (total events, revenue, etc.)
     }
 }
 
@@ -305,6 +170,100 @@ fun MyEventsContent(
         else -> Unit
     }
 }
+
+// ---------- Services Tab ----------
+@Composable
+fun ServicesContent(navController: NavController) {
+    // You already have ServicesScreen, so we just use it
+    // Or you can embed it directly
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Button(onClick = { navController.navigate("services") }) {
+            Text("Manage Services")
+        }
+    }
+}
+
+// ---------- Portfolio Tab ----------
+@Composable
+fun PortfolioContent(navController: NavController) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Button(onClick = { navController.navigate("portfolio") }) {
+            Text("Manage Portfolio")
+        }
+    }
+}
+
+// ---------- Bookings Tab ----------
+@Composable
+fun VendorBookingScreen(
+    navController: NavController,
+    viewModel: VendorBookingViewModel = hiltViewModel()
+) {
+    // This is the screen we created earlier – you can use the full implementation.
+    // For brevity, I'll show a simplified version that loads bookings and displays them.
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBookings()
+    }
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is VendorBookingUiState.ActionSuccess -> {
+                snackbarHostState.showSnackbar((uiState as VendorBookingUiState.ActionSuccess).message)
+                viewModel.resetActionState()
+                viewModel.loadBookings()
+            }
+            is VendorBookingUiState.Error -> {
+                snackbarHostState.showSnackbar((uiState as VendorBookingUiState.Error).message)
+                viewModel.resetActionState()
+            }
+            else -> Unit
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        when (uiState) {
+            is VendorBookingUiState.Loading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            is VendorBookingUiState.BookingsLoaded -> {
+                val bookings = (uiState as VendorBookingUiState.BookingsLoaded).bookings
+                if (bookings.isEmpty()) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No bookings yet")
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.padding(paddingValues),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(bookings) { booking ->
+                            VendorBookingCard(
+                                booking = booking,
+                                onConfirm = { viewModel.confirmBooking(booking.id) },
+                                onComplete = { viewModel.completeBooking(booking.id) },
+                                onReject = { viewModel.rejectBooking(booking.id) }
+                            )
+                        }
+                    }
+                }
+            }
+            is VendorBookingUiState.Error -> {
+                Text("Error: ${(uiState as VendorBookingUiState.Error).message}", modifier = Modifier.padding(16.dp))
+           }
+//            else -> Unit
+            else -> {}
+        }
+    }
+}
+
 
 
 // ---------- Reusable Event Card (same as Consumer) ----------

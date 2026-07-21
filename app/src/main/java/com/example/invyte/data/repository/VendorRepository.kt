@@ -3,6 +3,7 @@ package com.example.invyte.data.repository
 
 import com.example.invyte.data.model.*
 import com.example.invyte.data.network.ApiService
+import com.example.invyte.utils.safeApiCall
 import okhttp3.MultipartBody
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -92,4 +93,16 @@ class VendorRepository @Inject constructor(
             PortfolioResponse(false, "Server error: ${response.code()}", emptyList())
         }
     }
+
+
+
+
+    suspend fun listVendors(category: String?, minRating: Double?, search: String?, page: Int, limit: Int): Result<VendorListResponse> =
+        safeApiCall { api.listVendors(category, minRating, search, page, limit) }
+
+    suspend fun getVendorDetails(id: Int): Result<Vendor> =
+        safeApiCall { api.getVendorDetails(id) }
+
+    suspend fun getVendorServices(id: Int): Result<List<Service>> =
+        safeApiCall { api.getVendorServices(id) }
 }

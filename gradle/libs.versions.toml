@@ -12,7 +12,14 @@ ksp = "2.0.21-1.0.28"
 runtime = "1.11.3"
 navigationRuntimeKtx = "2.9.8"
 transportApi = "4.1.1"
-foundation = "1.11.3"  # match your Kotlin version
+foundation = "1.11.3"
+media3Ui = "1.10.1"
+media3Exoplayer = "1.10.1"
+runtimeVersion = "1.11.4"
+identityDoctypesJvm = "202411.1"
+material3 = "1.4.0"
+foundationVersion = "1.11.4"
+ui = "1.11.4"  # match your Kotlin version
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +40,13 @@ androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 transport-api = { group = "com.google.android.datatransport", name = "transport-api", version.ref = "transportApi" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
+identity-doctypes-jvm = { group = "com.android.identity", name = "identity-doctypes-jvm", version.ref = "identityDoctypesJvm" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
