@@ -2,6 +2,7 @@ package com.example.invyte.data.repository
 
 import com.example.invyte.data.model.*
 import com.example.invyte.data.network.ApiService
+import com.example.invyte.utils.safeApiCall
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,6 +35,10 @@ class EventRepository @Inject constructor(
             EventsResponse(false, "Server error: ${response.code()}", null)
         }
     }
+
+
+    suspend fun getMyEvents(): Result<List<Event>> =
+        safeApiCall { api.getMyEvents() }
 
 
 
@@ -85,11 +90,11 @@ class EventRepository @Inject constructor(
 
     suspend fun getMyEvents(page: Int = 1, limit: Int = 20): EventsResponse {
         val response = api.getMyEvents(page, limit)
-        return if (response.isSuccessful) {
+        return (if (response.isSuccessful) {
             response.body() ?: EventsResponse(false, "Unknown error", null)
         } else {
             EventsResponse(false, "Server error: ${response.code()}", null)
-        }
+        }) as EventsResponse
     }
 
     suspend fun toggleLike(id: Int): LikeResponse {

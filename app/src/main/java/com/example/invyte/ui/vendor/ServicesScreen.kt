@@ -28,6 +28,7 @@ import kotlin.String
 @Composable
 fun ServicesScreen(
     navController: NavController,
+    paddingValues: PaddingValues = PaddingValues(0.dp),  // ← accepts padding
     viewModel: VendorViewModel = hiltViewModel()
 ) {
     val servicesState by viewModel.servicesState.collectAsState()
@@ -40,10 +41,12 @@ fun ServicesScreen(
 
     val currentState = servicesState
 
+    // ✅ Apply padding to avoid overlap with top bar
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF121212))
+            .padding(paddingValues)   // <-- this is the fix
     ) {
         when (currentState) {
             is ServicesUiState.Loading -> {
@@ -81,6 +84,7 @@ fun ServicesScreen(
             else -> Unit
         }
 
+        // Floating Action Button
         FloatingActionButton(
             onClick = { showAddDialog = true },
             containerColor = Color(0xFFE91E63),
@@ -93,6 +97,7 @@ fun ServicesScreen(
         }
     }
 
+    // Dialogs (unchanged)
     if (showAddDialog) {
         ServiceDialog(
             onDismiss = { showAddDialog = false },
@@ -135,7 +140,6 @@ fun ServiceCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                // serviceName is non‑null, but we still use a safe fallback
                 Text(
                     text = service.serviceName ?: "Unnamed",
                     style = MaterialTheme.typography.titleMedium,
@@ -145,12 +149,12 @@ fun ServiceCard(
                     text = "Price: KSH ${service.basePrice ?: 0.0}",
                     color = Color.Gray
                 )
+                // ✅ Fixed: Show category ID (or category name if available)
                 Text(
-                    text = "Category: ${service.serviceName ?: 0}",
+                    text = "Category ID: ${service.categoryId ?: 0}",
                     color = Color.Gray,
                     fontSize = 12.sp
                 )
-                // description can be null – show only if present
                 service.description?.let {
                     Text(text = it, color = Color.Gray, fontSize = 12.sp)
                 }
@@ -170,7 +174,7 @@ fun ServiceCard(
 // ---------- Service Dialog (correct fields, null‑safe) ----------
 @Composable
 fun ServiceDialog(
-    initialService: Service? = null,   // null = add mode
+    initialService: Service? = null,
     onDismiss: () -> Unit,
     onConfirm: (ServiceRequest) -> Unit
 ) {

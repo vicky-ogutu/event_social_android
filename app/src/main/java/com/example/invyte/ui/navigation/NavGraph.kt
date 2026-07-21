@@ -25,8 +25,14 @@ import com.example.invyte.ui.event.EventCreateScreen
 import com.example.invyte.ui.event.EventDetailScreen
 import com.example.invyte.ui.event.MyEventsScreen
 import com.example.invyte.ui.profile.ProfileScreen
+import com.example.invyte.ui.vendor.BookingScreen
+import com.example.invyte.ui.vendor.ChatScreen
 import com.example.invyte.ui.vendor.PortfolioScreen
 import com.example.invyte.ui.vendor.ServicesScreen
+import com.example.invyte.ui.vendor.SocialFeedScreen
+import com.example.invyte.ui.vendor.VendorBookingScreen
+import com.example.invyte.ui.vendor.VendorDetailScreen
+import com.example.invyte.ui.vendor.VendorListScreen
 import com.example.invyte.ui.vendor.VendorProfileScreen
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -121,5 +127,37 @@ fun NavGraph(
             val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
             EventCreateScreen(navController, eventId)
         }
+
+        composable("vendor_list") { VendorListScreen(navController) }
+        composable("vendor_detail/{vendorId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("vendorId")?.toIntOrNull() ?: 0
+            VendorDetailScreen(navController, id)
+        }
+        composable("booking/{vendorId}/{serviceId}") { backStackEntry ->
+            val vendorId = backStackEntry.arguments?.getString("vendorId")?.toIntOrNull() ?: 0
+            val serviceId = backStackEntry.arguments?.getString("serviceId")?.toIntOrNull() ?: 0
+            BookingScreen(navController, vendorId, serviceId)
+        }
+        composable("social_feed") { SocialFeedScreen() }
+        composable("social_feed_event/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+            SocialFeedScreen(eventId)
+        }
+        composable("chat/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+            ChatScreen(eventId)
+        }
+        composable("livestream/{livestreamId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("livestreamId")?.toIntOrNull() ?: 0
+            // LivestreamPlayerScreen(id)
+        }
+
+        composable("vendor_bookings") {
+            VendorBookingScreen(navController)
+        }
+        composable("vendor_bookings") {
+            VendorBookingScreen(navController)
+        }
+
     }
 }

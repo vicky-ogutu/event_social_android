@@ -104,6 +104,17 @@ fun ConsumerHomeScreen(
                         unselectedIconColor = Color.Gray
                     )
                 )
+
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Vendors") },
+                    selected = false,
+                    onClick = { navController.navigate("vendor_list") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFFE91E63),
+                        unselectedIconColor = Color.Gray
+                    )
+                )
             }
         }
     ) { paddingValues ->
