@@ -86,10 +86,42 @@ fun ConsumerHomeScreen(
                         unselectedIconColor = Color.Gray
                     )
                 )
+//                NavigationBarItem(
+//                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+//                    selected = false,
+//                    onClick = { /* optional search screen */ },
+//                    colors = NavigationBarItemDefaults.colors(
+//                        selectedIconColor = Color(0xFFE91E63),
+//                        unselectedIconColor = Color.Gray
+//                    )
+//                )
+                // Chat (new for events)
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") },
                     selected = false,
-                    onClick = { /* optional search screen */ },
+                    onClick = { navController.navigate("chat") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFFE91E63),
+                        unselectedIconColor = Color.Gray
+                    )
+                )
+
+
+                // 👇 NEW: Messages item for consumer - vendors
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Message, contentDescription = "Messages") },
+                    selected = false,
+                    onClick = { navController.navigate("messages") },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFFE91E63),
+                        unselectedIconColor = Color.Gray
+                    )
+                )
+                // Livestream (new)
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.LiveTv, contentDescription = "Livestream") },
+                    selected = false,
+                    onClick = { navController.navigate("livestream") },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFFE91E63),
                         unselectedIconColor = Color.Gray

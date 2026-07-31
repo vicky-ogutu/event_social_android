@@ -31,6 +31,7 @@ import com.example.invyte.ui.vendor.VendorViewModel
 import com.example.invyte.ui.vendor.VendorProfileUiState
 import kotlinx.coroutines.launch
 import com.example.invyte.ui.common.EventCard
+import com.example.invyte.ui.vendor.ConversationListScreen
 import com.example.invyte.ui.vendor.VendorBookingCard
 import com.example.invyte.ui.vendor.VendorBookingUiState
 import com.example.invyte.ui.vendor.VendorBookingViewModel
@@ -40,7 +41,8 @@ enum class VendorTab(val title: String) {
     EVENTS("Events"),
     SERVICES("Services"),
     PORTFOLIO("Portfolio"),
-    BOOKINGS("Bookings")
+    BOOKINGS("Bookings"),
+    MESSAGES("Messages")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +110,7 @@ fun VendorHomeScreen(
                 VendorTab.PORTFOLIO -> PortfolioContent(
                     navController = navController
                 )
+                VendorTab.MESSAGES -> MessagesContent(navController)
                 VendorTab.BOOKINGS -> VendorBookingScreen(
                     navController = navController,
                     viewModel = bookingViewModel
@@ -115,6 +118,11 @@ fun VendorHomeScreen(
             }
         }
     }
+}
+
+@Composable
+fun MessagesContent(navController: NavController) {
+    ConversationListScreen(navController)
 }
 
 // ---------- My Events Tab ----------
