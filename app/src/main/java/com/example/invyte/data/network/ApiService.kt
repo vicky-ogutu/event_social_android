@@ -5,6 +5,7 @@ import com.example.invyte.data.model.Booking
 import com.example.invyte.data.model.ChangePasswordRequest
 import com.example.invyte.data.model.ChatMessage
 import com.example.invyte.data.model.Comment
+import com.example.invyte.data.model.Conversation
 import com.example.invyte.data.model.CreateBookingRequest
 import com.example.invyte.data.model.CreateCommentRequest
 import com.example.invyte.data.model.CreateLivestreamRequest
@@ -21,6 +22,7 @@ import com.example.invyte.data.model.Livestream
 import com.example.invyte.data.model.LivestreamAccessResponse
 import com.example.invyte.data.model.LivestreamPurchaseRequest
 import com.example.invyte.data.model.LoginRequest
+import com.example.invyte.data.model.Message
 import com.example.invyte.data.model.PaymentIntentResponse
 import com.example.invyte.data.model.PortfolioResponse
 import com.example.invyte.data.model.RegisterRequest
@@ -260,4 +262,22 @@ interface ApiService {
 
     @POST("api/livestream/confirm-purchase")
     suspend fun confirmLivestreamPurchase(@Body request: LivestreamPurchaseRequest): Response<ApiResponse<LivestreamAccessResponse>>
+
+    @POST("api/messages")
+    suspend fun sendMessage(@Body request: SendMessageRequest): Response<ApiResponse<Message>>
+
+    @GET("api/messages/conversations")
+    suspend fun getConversations(): Response<ApiResponse<List<Conversation>>>
+
+    @GET("api/messages/{userId}")
+    suspend fun getConversation(
+        @Path("userId") userId: Int,
+        @Query("limit") limit: Int = 50,
+        @Query("offset") offset: Int = 0
+    ): Response<ApiResponse<List<Message>>>
+
+    data class SendMessageRequest(
+        val receiver_id: Int,
+        val message: String
+    )
 }

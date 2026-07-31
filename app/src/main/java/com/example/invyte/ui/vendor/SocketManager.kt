@@ -2,6 +2,7 @@ package com.example.invyte.ui.vendor
 
 import com.example.invyte.Constants
 import com.example.invyte.data.model.ChatMessage
+import com.example.invyte.data.model.Message
 import com.example.invyte.utils.TokenManager
 
 import io.socket.client.IO
@@ -22,6 +23,9 @@ class SocketManager @Inject constructor(
     private val _newMessage = MutableSharedFlow<ChatMessage>()
     val newMessage: SharedFlow<ChatMessage> = _newMessage
 
+    private val _newPrivateMessage = MutableSharedFlow<Message>()
+    val newPrivateMessage: SharedFlow<Message> = _newPrivateMessage
+
     suspend fun connect() {
         if (socket?.connected() == true) return
 
@@ -35,13 +39,22 @@ class SocketManager @Inject constructor(
             reconnectionDelay = 1000
         }
 
+        // Create the socket instance
         socket = IO.socket(Constants.BASE_URL_SOCKET, opts)
+
+        // Attach all listeners
         socket?.apply {
-            on(Socket.EVENT_CONNECT) { println("Socket connected") }
-            on(Socket.EVENT_DISCONNECT) { println("Socket disconnected") }
+            on(Socket.EVENT_CONNECT) {
+                println("Socket connected")
+            }
+            on(Socket.EVENT_DISCONNECT) {
+                println("Socket disconnected")
+            }
             on(Socket.EVENT_CONNECT_ERROR) { args ->
                 println("Socket error: ${args.joinToString()}")
             }
+
+            // Event chat messages
             on("new-message") { args ->
                 try {
                     val data = args[0] as Map<*, *>
@@ -64,6 +77,29 @@ class SocketManager @Inject constructor(
                     e.printStackTrace()
                 }
             }
+
+            // Private messages
+            on("new-private-message") { args ->
+                try {
+                    val data = args[0] as Map<*, *>
+                    val msg = Message(
+                        id = (data["id"] as? Number)?.toInt() ?: 0,
+                        sender_id = (data["sender_id"] as? Number)?.toInt() ?: 0,
+                        receiver_id = (data["receiver_id"] as? Number)?.toInt() ?: 0,
+                        message = data["message"] as? String ?: "",
+                        is_read = data["is_read"] as? Boolean ?: false,
+                        read_at = data["read_at"] as? String,
+                        created_at = data["created_at"] as? String ?: ""
+                    )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        _newPrivateMessage.emit(msg)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            // Finally connect
             connect()
         }
     }
@@ -76,6 +112,10 @@ class SocketManager @Inject constructor(
         socket?.emit("leave-event", eventId)
     }
 
+    fun joinPrivate(userId: Int) {
+        socket?.emit("join-private", userId)
+    }
+
     fun sendMessage(eventId: Int, message: String, userId: Int) {
         val data = mapOf(
             "eventId" to eventId,
@@ -84,6 +124,10 @@ class SocketManager @Inject constructor(
             "messageType" to "text"
         )
         socket?.emit("send-message", data)
+    }
+
+    fun sendPrivateMessage(receiverId: Int, message: String) {
+        socket?.emit("private-message", mapOf("receiverId" to receiverId, "message" to message))
     }
 
     fun disconnect() {

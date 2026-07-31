@@ -26,7 +26,9 @@ import com.example.invyte.ui.event.EventDetailScreen
 import com.example.invyte.ui.event.MyEventsScreen
 import com.example.invyte.ui.profile.ProfileScreen
 import com.example.invyte.ui.vendor.BookingScreen
+import com.example.invyte.ui.vendor.ChatDetailScreen
 import com.example.invyte.ui.vendor.ChatScreen
+import com.example.invyte.ui.vendor.ConversationListScreen
 import com.example.invyte.ui.vendor.PortfolioScreen
 import com.example.invyte.ui.vendor.ServicesScreen
 import com.example.invyte.ui.vendor.SocialFeedScreen
@@ -158,6 +160,23 @@ fun NavGraph(
         composable("vendor_bookings") {
             VendorBookingScreen(navController)
         }
+
+        composable("messages") {
+            ConversationListScreen(navController)
+        }
+        composable("chat/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: 0
+            ChatDetailScreen(navController, userId)
+        }
+
+
+
+//        composable("chat") {
+//            ChatScreen(navController)
+//        }
+//        composable("livestream") {
+//            LivestreamScreen(navController)
+//        }
 
     }
 }

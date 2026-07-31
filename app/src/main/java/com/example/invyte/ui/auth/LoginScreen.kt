@@ -1,15 +1,21 @@
 package com.example.invyte.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.material3.TextFieldDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +32,7 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) } // 👈 visibility state
     val uiState by viewModel.uiState.collectAsState()
 
     // Handle navigation when login succeeds
@@ -49,6 +56,15 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(24.dp)
         ) {
+            // Logo
+            Image(
+                painter = painterResource(id = com.example.invyte.R.drawable.invytelogo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(bottom = 16.dp)
+            )
+
             Text(
                 text = "Welcome Back",
                 style = MaterialTheme.typography.headlineLarge,
@@ -72,12 +88,22 @@ fun LoginScreen(
                 ),
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password", color = Color.Gray) },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                            tint = Color.Gray
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = colors(
                     focusedIndicatorColor = PrimaryPink,
