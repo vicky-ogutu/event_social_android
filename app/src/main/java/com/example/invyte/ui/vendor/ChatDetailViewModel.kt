@@ -4,17 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Message
 import com.example.invyte.data.repository.MessageRepository
+import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 @HiltViewModel
 class ChatDetailViewModel @Inject constructor(
     private val repo: MessageRepository,
-    private val socketManager: SocketManager
+    private val socketManager: SocketManager,
+    val tokenManager: TokenManager
 ) : ViewModel() {
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
@@ -22,7 +25,7 @@ class ChatDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<ChatDetailUiState>(ChatDetailUiState.Idle)
     val uiState: StateFlow<ChatDetailUiState> = _uiState.asStateFlow()
 
-    private lateinit var otherUserId: Int
+    private var otherUserId by Delegates.notNull<Int>()
 
     fun loadConversation(userId: Int) {
         otherUserId = userId

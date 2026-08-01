@@ -36,9 +36,12 @@ class EventRepository @Inject constructor(
         }
     }
 
+//
+//    suspend fun getMyEvents(): Result<List<Event>> =
+//        safeApiCall { api.getMyEvents() }
 
-    suspend fun getMyEvents(): Result<List<Event>> =
-        safeApiCall { api.getMyEvents() }
+//    suspend fun getMyEvents(page: Int = 1, limit: Int = 20): Result<EventListResponse> =
+//        safeApiCall { api.getMyEvents(page, limit) }
 
 
 
@@ -88,14 +91,18 @@ class EventRepository @Inject constructor(
         }
     }
 
-    suspend fun getMyEvents(page: Int = 1, limit: Int = 20): EventsResponse {
-        val response = api.getMyEvents(page, limit)
-        return (if (response.isSuccessful) {
-            response.body() ?: EventsResponse(false, "Unknown error", null)
-        } else {
-            EventsResponse(false, "Server error: ${response.code()}", null)
-        }) as EventsResponse
-    }
+//    suspend fun getMyEvents(page: Int = 1, limit: Int = 20): EventsResponse {
+//        val response = api.getMyEvents(page, limit)
+//        return (if (response.isSuccessful) {
+//            response.body() ?: EventsResponse(false, "Unknown error", null)
+//        } else {
+//            EventsResponse(false, "Server error: ${response.code()}", null)
+//        }) as EventsResponse
+//    }
+
+        suspend fun getMyEvents(page: Int = 1, limit: Int = 20): Result<EventListResponse> =
+        safeApiCall { api.getMyEvents(page, limit) }
+
 
     suspend fun toggleLike(id: Int): LikeResponse {
         val response = api.toggleLike(id)

@@ -7,7 +7,7 @@ import com.example.invyte.data.model.Livestream
 import com.example.invyte.data.model.PaymentIntentResponse
 import com.example.invyte.data.repository.LivestreamRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

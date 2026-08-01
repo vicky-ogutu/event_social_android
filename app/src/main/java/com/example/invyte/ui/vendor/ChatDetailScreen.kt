@@ -22,23 +22,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.invyte.ui.MessageBubble
-import com.example.invyte.utils.TokenManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatDetailScreen(
     navController: NavController,
     userId: Int,
-    viewModel: ChatDetailViewModel = hiltViewModel(),
-    tokenManager: TokenManager = hiltViewModel() // 👈 get token manager
+    viewModel: ChatDetailViewModel = hiltViewModel()
 ) {
     val messages by viewModel.messages.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     var input by remember { mutableStateOf("") }
-    val currentUserId = tokenManager.getUserIdFlow().collectAsState(initial = null).value ?: 0
+    
+    // Get currentUserId from the ViewModel's tokenManager
+    val currentUserId by viewModel.tokenManager.getUserIdFlow().collectAsState(initial = 0)
 
     LaunchedEffect(Unit) {
         viewModel.loadConversation(userId)
@@ -58,7 +58,7 @@ fun ChatDetailScreen(
                 items(messages.reversed()) { msg ->
                     MessageBubble(
                         message = msg,
-                        isCurrentUser = msg.sender_id == currentUserId
+                        isCurrentUser = msg.sender_id == (currentUserId ?: 0)
                     )
                 }
             }

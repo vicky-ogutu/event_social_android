@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.invyte.ui.BookingUiState
+import com.github.kittinunf.result.success
 
 @HiltViewModel
 class BookingViewModel @Inject constructor(
@@ -77,14 +78,26 @@ class BookingViewModel @Inject constructor(
         }
     }
 
-    fun loadUserEvents() {
-        viewModelScope.launch {
-            val result = eventRepo.getMyEvents() // you need to implement this in EventRepository
-            if (result.isSuccess) {
-                _userEvents.value = result.getOrNull() ?: emptyList()
-            }
+//    fun loadUserEvents() {
+//        viewModelScope.launch {
+//            val result = eventRepo.getMyEvents() // you need to implement this in EventRepository
+//            if (result.success) {
+//                //_userEvents.value = result.getOrNull() ?: emptyList()
+//                _userEvents.value= result.getOrNull() ?: emptyList()
+//            }
+//        }
+//    }
+fun loadUserEvents() {
+    viewModelScope.launch {
+        val result = eventRepo.getMyEvents()
+        if (result.isSuccess) {
+            val listResponse = result.getOrNull()!!
+            _userEvents.value = listResponse.data // extract the list
+        } else {
+            _userEvents.value = emptyList()
         }
     }
+}
 
     fun selectEvent(event: Event) {
         _selectedEvent.value = event
