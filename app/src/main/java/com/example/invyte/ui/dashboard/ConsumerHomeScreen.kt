@@ -60,37 +60,37 @@ fun ConsumerHomeScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        when (selectedTab) {
-                            0 -> "Vendors"
-                            1 -> "Events"
-                            2 -> "My Events"
-                            else -> "Messages"
-                        },
-                        color = Color.White
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate("profile") }) {
-                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
-                    }
-                    IconButton(onClick = {
-                        coroutineScope.launch {
-                            authViewModel.logout()
-                            navController.navigate("login") {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    }) {
-                        Icon(Icons.Default.Logout, contentDescription = "Logout", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A1A1A))
-            )
-        },
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text(
+//                        when (selectedTab) {
+//                            0 -> "Vendors"
+//                            1 -> "Events"
+//                            2 -> "My Events"
+//                            else -> "Messages"
+//                        },
+//                        color = Color.White
+//                    )
+//                },
+//                actions = {
+//                    IconButton(onClick = { navController.navigate("profile") }) {
+//                        Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
+//                    }
+//                    IconButton(onClick = {
+//                        coroutineScope.launch {
+//                            authViewModel.logout()
+//                            navController.navigate("login") {
+//                                popUpTo(0) { inclusive = true }
+//                            }
+//                        }
+//                    }) {
+//                        Icon(Icons.Default.Logout, contentDescription = "Logout", tint = Color.White)
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF1A1A1A))
+//            )
+//        },
         bottomBar = {
             NavigationBar(
                 containerColor = Color(0xFF1A1A1A),

@@ -28,7 +28,6 @@ class SocketManager @Inject constructor(
 
     suspend fun connect() {
         if (socket?.connected() == true) return
-
         val token = tokenManager.getTokenSync()
         val opts = IO.Options().apply {
             if (!token.isNullOrEmpty()) {
@@ -38,23 +37,12 @@ class SocketManager @Inject constructor(
             reconnectionAttempts = 5
             reconnectionDelay = 1000
         }
-
-        // Create the socket instance
         socket = IO.socket(Constants.BASE_URL_SOCKET, opts)
-
-        // Attach all listeners
         socket?.apply {
-            on(Socket.EVENT_CONNECT) {
-                println("Socket connected")
-            }
-            on(Socket.EVENT_DISCONNECT) {
-                println("Socket disconnected")
-            }
-            on(Socket.EVENT_CONNECT_ERROR) { args ->
-                println("Socket error: ${args.joinToString()}")
-            }
+            on(Socket.EVENT_CONNECT) { println("Socket connected") }
+            on(Socket.EVENT_DISCONNECT) { println("Socket disconnected") }
+            on(Socket.EVENT_CONNECT_ERROR) { args -> println("Socket error: ${args.joinToString()}") }
 
-            // Event chat messages
             on("new-message") { args ->
                 try {
                     val data = args[0] as Map<*, *>
@@ -70,15 +58,10 @@ class SocketManager @Inject constructor(
                         full_name = data["full_name"] as? String ?: "Unknown",
                         profile_picture = data["profile_picture"] as? String
                     )
-                    CoroutineScope(Dispatchers.IO).launch {
-                        _newMessage.emit(message)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                    CoroutineScope(Dispatchers.IO).launch { _newMessage.emit(message) }
+                } catch (e: Exception) { e.printStackTrace() }
             }
 
-            // Private messages
             on("new-private-message") { args ->
                 try {
                     val data = args[0] as Map<*, *>
@@ -91,37 +74,24 @@ class SocketManager @Inject constructor(
                         read_at = data["read_at"] as? String,
                         created_at = data["created_at"] as? String ?: ""
                     )
-                    CoroutineScope(Dispatchers.IO).launch {
-                        _newPrivateMessage.emit(msg)
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                    CoroutineScope(Dispatchers.IO).launch { _newPrivateMessage.emit(msg) }
+                } catch (e: Exception) { e.printStackTrace() }
             }
-
-            // Finally connect
             connect()
         }
     }
 
-    fun joinEvent(eventId: Int) {
-        socket?.emit("join-event", eventId)
-    }
+    fun joinEvent(eventId: Int) { socket?.emit("join-event", eventId) }
+    fun leaveEvent(eventId: Int) { socket?.emit("leave-event", eventId) }
+    fun joinPrivate(userId: Int) { socket?.emit("join-private", userId) }
 
-    fun leaveEvent(eventId: Int) {
-        socket?.emit("leave-event", eventId)
-    }
-
-    fun joinPrivate(userId: Int) {
-        socket?.emit("join-private", userId)
-    }
-
-    fun sendMessage(eventId: Int, message: String, userId: Int) {
+    // Remove userId parameter – server will use authenticated user
+    fun sendMessage(eventId: Int, message: String, messageType: String = "text", mediaUrl: String? = null) {
         val data = mapOf(
             "eventId" to eventId,
             "message" to message,
-            "userId" to userId,
-            "messageType" to "text"
+            "messageType" to messageType,
+            "mediaUrl" to mediaUrl
         )
         socket?.emit("send-message", data)
     }
@@ -130,10 +100,6 @@ class SocketManager @Inject constructor(
         socket?.emit("private-message", mapOf("receiverId" to receiverId, "message" to message))
     }
 
-    fun disconnect() {
-        socket?.disconnect()
-        socket = null
-    }
-
+    fun disconnect() { socket?.disconnect(); socket = null }
     fun isConnected(): Boolean = socket?.connected() == true
 }

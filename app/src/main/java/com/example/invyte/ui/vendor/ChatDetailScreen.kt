@@ -35,10 +35,8 @@ fun ChatDetailScreen(
 ) {
     val messages by viewModel.messages.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val currentUserId by viewModel.currentUserIdFlow.collectAsState(initial = 0)
     var input by remember { mutableStateOf("") }
-    
-    // Get currentUserId from the ViewModel's tokenManager
-    val currentUserId by viewModel.tokenManager.getUserIdFlow().collectAsState(initial = 0)
 
     LaunchedEffect(Unit) {
         viewModel.loadConversation(userId)
@@ -58,7 +56,7 @@ fun ChatDetailScreen(
                 items(messages.reversed()) { msg ->
                     MessageBubble(
                         message = msg,
-                        isCurrentUser = msg.sender_id == (currentUserId ?: 0)
+                        isCurrentUser = msg.sender_id == currentUserId
                     )
                 }
             }

@@ -22,13 +22,15 @@ import com.example.invyte.data.model.Event
 import com.example.invyte.ui.theme.FieldBorder
 import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
+import com.example.invyte.ui.vendor.SocketManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailScreen(
     navController: NavController,
     eventId: Int,
-    viewModel: EventViewModel = hiltViewModel()
+    viewModel: EventViewModel = hiltViewModel(),
+    socketManager: SocketManager = hiltViewModel()
 ) {
     val detailState by viewModel.detailState.collectAsState()
     val actionState by viewModel.actionState.collectAsState()
@@ -36,6 +38,9 @@ fun EventDetailScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getEvent(eventId)
+        //viewModel.joinEvent(eventId)
+        socketManager.connect()
+        socketManager.joinEvent(eventId)
     }
 
     Scaffold(
@@ -53,7 +58,7 @@ fun EventDetailScreen(
     ) { paddingValues ->
         when (detailState) {
             is EventDetailUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
