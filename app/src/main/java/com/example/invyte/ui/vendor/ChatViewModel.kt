@@ -6,7 +6,7 @@ import com.example.invyte.data.model.ChatMessage
 import com.example.invyte.data.repository.SocialRepository
 import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

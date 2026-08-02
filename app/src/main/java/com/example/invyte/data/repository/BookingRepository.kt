@@ -6,8 +6,8 @@ import com.example.invyte.data.model.CreatePaymentIntentRequest
 import com.example.invyte.data.model.PaymentIntentResponse
 import com.example.invyte.data.network.ApiService
 import com.example.invyte.utils.safeApiCall
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class BookingRepository @Inject constructor(

@@ -12,6 +12,7 @@ import com.example.invyte.data.model.CreateLivestreamRequest
 import com.example.invyte.data.model.CreatePaymentIntentRequest
 import com.example.invyte.data.model.CreatePostRequest
 import com.example.invyte.data.model.Event
+import com.example.invyte.data.model.EventListResponse
 import com.example.invyte.data.model.EventRequest
 import com.example.invyte.data.model.EventResponse
 import com.example.invyte.data.model.EventsResponse
@@ -153,11 +154,22 @@ interface ApiService {
         @Body request: JoinEventRequest
     ): Response<GenericResponse>
 
+//    @GET("api/events/my-events")
+//    suspend fun getMyEvents(
+//        @Query("page") page: Int = 1,
+//        @Query("limit") limit: Int = 20
+//    ): Response<ApiResponse<List<Event>>>
+
+
+
+
     @GET("api/events/my-events")
     suspend fun getMyEvents(
         @Query("page") page: Int = 1,
         @Query("limit") limit: Int = 20
-    ): Response<ApiResponse<List<Event>>>
+    ): Response<ApiResponse<EventListResponse>>
+
+
 
     @POST("api/events/{id}/like")
     suspend fun toggleLike(@Path("id") id: Int): Response<LikeResponse>

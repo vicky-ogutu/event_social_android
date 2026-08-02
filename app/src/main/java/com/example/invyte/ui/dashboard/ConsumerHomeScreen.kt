@@ -33,31 +33,50 @@ import com.example.invyte.ui.theme.TextWhite
 import com.google.android.datatransport.Event
 import kotlinx.coroutines.launch
 import com.example.invyte.ui.common.EventCard
+import com.example.invyte.ui.event.MyEventsScreen
+import com.example.invyte.ui.vendor.ConversationListScreen
+import com.example.invyte.ui.vendor.VendorListScreen
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConsumerHomeScreen(
     navController: NavController,
     viewModel: EventViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel() // 👈 inject AuthViewModel
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val eventsState by viewModel.eventsState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.listEvents()
+    // Selected tab index (0=Home, 1=Events, 2=My Events, 3=Messages)
+    var selectedTab by remember { mutableStateOf(0) }
+
+    // Load events when the Events tab is selected
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == 1) {
+            viewModel.listEvents(search = searchQuery.takeIf { it.isNotBlank() })
+        }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Events", color = Color.White) },
+                title = {
+                    Text(
+                        when (selectedTab) {
+                            0 -> "Vendors"
+                            1 -> "Events"
+                            2 -> "My Events"
+                            else -> "Messages"
+                        },
+                        color = Color.White
+                    )
+                },
                 actions = {
                     IconButton(onClick = { navController.navigate("profile") }) {
                         Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
                     }
-                    // 👇 NEW: Logout button
                     IconButton(onClick = {
                         coroutineScope.launch {
                             authViewModel.logout()
@@ -79,49 +98,19 @@ fun ConsumerHomeScreen(
             ) {
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    selected = true,
-                    onClick = { /* already here */ },
+                    label = { Text("Home") },
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFFE91E63),
                         unselectedIconColor = Color.Gray
                     )
                 )
-//                NavigationBarItem(
-//                    icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-//                    selected = false,
-//                    onClick = { /* optional search screen */ },
-//                    colors = NavigationBarItemDefaults.colors(
-//                        selectedIconColor = Color(0xFFE91E63),
-//                        unselectedIconColor = Color.Gray
-//                    )
-//                )
-                // Chat (new for events)
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") },
-                    selected = false,
-                    onClick = { navController.navigate("chat") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFFE91E63),
-                        unselectedIconColor = Color.Gray
-                    )
-                )
-
-
-                // 👇 NEW: Messages item for consumer - vendors
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Message, contentDescription = "Messages") },
-                    selected = false,
-                    onClick = { navController.navigate("messages") },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFFE91E63),
-                        unselectedIconColor = Color.Gray
-                    )
-                )
-                // Livestream (new)
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.LiveTv, contentDescription = "Livestream") },
-                    selected = false,
-                    onClick = { navController.navigate("livestream") },
+                    icon = { Icon(Icons.Default.Search, contentDescription = "Events") },
+                    label = { Text("Events") },
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFFE91E63),
                         unselectedIconColor = Color.Gray
@@ -129,95 +118,130 @@ fun ConsumerHomeScreen(
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Event, contentDescription = "My Events") },
-                    selected = false,
-                    onClick = { navController.navigate("my_events") },
+                    label = { Text("My Events") },
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFFE91E63),
                         unselectedIconColor = Color.Gray
                     )
                 )
-
-
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Search, contentDescription = "Vendors") },
-                    selected = false,
-                    onClick = { navController.navigate("vendor_list") },
+                    icon = { Icon(Icons.Default.Message, contentDescription = "Messages") },
+                    label = { Text("Messages") },
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFFE91E63),
                         unselectedIconColor = Color.Gray
                     )
                 )
             }
+        },
+        floatingActionButton = {
+            // Show FAB on Events (1) and My Events (2) tabs
+            if (selectedTab == 1 || selectedTab == 2) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("create_event") },
+                    containerColor = PrimaryPink
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Create Event")
+                }
+            }
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF121212))
                 .padding(paddingValues)
         ) {
-            // Search bar (optional)
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    viewModel.listEvents(search = it.takeIf { it.isNotBlank() })
-                },
-
-                label = { Text("Search events", color = Color.Gray) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
-                colors = colors(
-                    focusedIndicatorColor = PrimaryPink,
-                    unfocusedIndicatorColor = FieldBorder,
-                    focusedLabelColor = TextWhite,
-                    unfocusedLabelColor = FieldBorder,
-                    focusedTextColor = TextWhite,
-                    unfocusedTextColor = TextWhite
-                ),
-                shape = RoundedCornerShape(16.dp)
-            )
-
-            when (eventsState) {
-                is EventsUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                is EventsUiState.Success -> {
-                    val events = (eventsState as EventsUiState.Success).events
-                    if (events.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("No events found", color = Color.Gray)
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(events) { event ->
-                                EventCard(
-                                    event = event,
-                                    onClick = { navController.navigate("event_detail/${event.id}") }
-                                )
-                            }
-                        }
-                    }
-                }
-                is EventsUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Error: ${(eventsState as EventsUiState.Error).message}", color = Color.Red)
-                    }
-                }
-                else -> Unit
+            when (selectedTab) {
+                0 -> VendorListScreen(navController)  // Home → Vendors
+                1 -> EventsListContent(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { query ->
+                        searchQuery = query
+                        viewModel.listEvents(search = query.takeIf { it.isNotBlank() })
+                    },
+                    eventsState = eventsState,
+                    navController = navController
+                )
+                2 -> MyEventsScreen(navController)    // Reuse existing MyEventsScreen
+                3 -> ConversationListScreen(navController) // Messages
             }
         }
     }
 }
 
+// Extracted Events list content with search bar
+@Composable
+fun EventsListContent(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    eventsState: EventsUiState,
+    navController: NavController
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF121212))
+    ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            label = { Text("Search events", color = Color.Gray) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+            colors = colors(
+                focusedIndicatorColor = PrimaryPink,
+                unfocusedIndicatorColor = FieldBorder,
+                focusedLabelColor = TextWhite,
+                unfocusedLabelColor = FieldBorder,
+                focusedTextColor = TextWhite,
+                unfocusedTextColor = TextWhite
+            ),
+            shape = RoundedCornerShape(16.dp)
+        )
+
+        when (eventsState) {
+            is EventsUiState.Loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            is EventsUiState.Success -> {
+                val events = eventsState.events
+                if (events.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No events found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(events) { event ->
+                            EventCard(
+                                event = event,
+                                onClick = { navController.navigate("event_detail/${event.id}") }
+                            )
+                        }
+                    }
+                }
+            }
+            is EventsUiState.Error -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Error: ${eventsState.message}", color = Color.Red)
+                }
+            }
+            else -> Unit
+        }
+    }
+}
 //@Composable
 //fun EventCard(event: com.example.invyte.data.model.Event, onClick: () -> Unit) {
 //    Card(

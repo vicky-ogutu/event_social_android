@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Vendor
 import com.example.invyte.data.repository.VendorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,13 +22,14 @@ class VendorDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = VendorDetailUiState.Loading
             val result = vendorRepo.getVendorDetails(id)
-            _uiState.value = (if (result.isSuccess) {
-                VendorDetailUiState.Success(result.getOrNull()!!)}else{
-                 VendorDetailUiState.Error(result.exceptionOrNull()?.message ?: "Error")}) as VendorDetailUiState
+            if (result.isSuccess) {
+                _uiState.value = VendorDetailUiState.Success(result.getOrNull()!!)
+            } else {
+                _uiState.value = VendorDetailUiState.Error(result.exceptionOrNull()?.message ?: "Error")
             }
         }
     }
-
+}
 
 sealed class VendorDetailUiState {
     object Loading : VendorDetailUiState()
