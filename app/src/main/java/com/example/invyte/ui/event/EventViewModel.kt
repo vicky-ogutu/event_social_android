@@ -56,27 +56,6 @@ class EventViewModel @Inject constructor(
     val actionState: StateFlow<EventActionUiState> = _actionState.asStateFlow()
 
     // ----- List events -----
-//    fun listEvents(
-//    ) {
-//        viewModelScope.launch {
-//            _eventsState.value = EventsUiState.Loading
-//            try {
-//                val response = eventRepository.listEvents()
-//                if (response.success && response.data != null) {
-//                    _eventsState.value = EventsUiState.Success(
-//                        events = response.data.data,
-//                        total = response.data.total,
-//                        page = response.data.page,
-//                        pages = response.data.pages
-//                    )
-//                } else {
-//                    _eventsState.value = EventsUiState.Error(response.message)
-//                }
-//            } catch (e: Exception) {
-//                _eventsState.value = EventsUiState.Error(e.localizedMessage ?: "Failed to load events")
-//            }
-//        }
-//    }
     fun listEvents(
         eventType: String? = null,
         dateFrom: String? = null,
@@ -105,49 +84,6 @@ class EventViewModel @Inject constructor(
         }
     }
 
-
-
-
-
-
-    // ----- My events -----
-//    fun getMyEvents(page: Int = 1, limit: Int = 20) {
-//        viewModelScope.launch {
-//            _myEventsState.value = EventsUiState.Loading
-//            try {
-//                val response = eventRepository.getMyEvents(page, limit)
-//                if (response.success && response.data != null) {
-//                    _myEventsState.value = EventsUiState.Success(
-//                        events = response.data.data,
-//                        total = response.data.total,
-//                        page = response.data.page,
-//                        pages = response.data.pages
-//                    )
-//                } else {
-//                    _myEventsState.value = EventsUiState.Error(response.message)
-//                }
-//            } catch (e: Exception) {
-//                _myEventsState.value = EventsUiState.Error(e.localizedMessage ?: "Failed to load your events")
-//            }
-//        }
-//    }
-//    fun getMyEvents() {
-//        viewModelScope.launch {
-//            _eventsState.value = EventsUiState.Loading
-//            val result = eventRepository.getMyEvents()
-//            _eventsState.value = if (result.isSuccess) {
-//                val listResponse = result.getOrNull()!!
-//                EventsUiState.Success(
-//                    events = listResponse.data,
-//                    total = listResponse.total,
-//                    page = listResponse.page,
-//                    pages = listResponse.pages
-//                )
-//            } else {
-//                EventsUiState.Error(result.exceptionOrNull()?.message ?: "Failed to load my events")
-//            }
-//        }
-//    }
 
     fun getMyEvents() {
         viewModelScope.launch {
