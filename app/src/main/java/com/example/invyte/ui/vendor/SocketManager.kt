@@ -23,6 +23,7 @@ class SocketManager @Inject constructor(
     private val _newMessage = MutableSharedFlow<ChatMessage>()
     val newMessage: SharedFlow<ChatMessage> = _newMessage
 
+    // consume <->  vendor
     private val _newPrivateMessage = MutableSharedFlow<Message>()
     val newPrivateMessage: SharedFlow<Message> = _newPrivateMessage
 

@@ -150,7 +150,7 @@ fun ServiceCard(
                     color = Color.White
                 )
                 Text(
-                    text = "Price: KSH ${service.basePrice ?: 0.0}",
+                    text = "Price:  ${service.basePrice ?: 0.0}",
                     color = Color.Gray
                 )
                 // ✅ Fixed: Show category ID (or category name if available)

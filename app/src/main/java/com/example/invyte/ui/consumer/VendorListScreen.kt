@@ -1,4 +1,4 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.ui.consumer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -61,7 +60,6 @@ import androidx.navigation.NavController
 import com.example.invyte.data.model.Vendor
 import com.example.invyte.ui.auth.AuthViewModel
 import com.example.invyte.ui.theme.PrimaryPink
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

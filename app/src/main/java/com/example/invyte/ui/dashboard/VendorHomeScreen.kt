@@ -72,7 +72,6 @@ fun VendorHomeScreen(
                     IconButton(onClick = { navController.navigate("profile") }) {
                         Icon(Icons.Default.Person, contentDescription = "Profile", tint = Color.White)
                     }
-                    // 👇 NEW: Logout button
                     IconButton(onClick = {
                         coroutineScope.launch {
                             authViewModel.logout()

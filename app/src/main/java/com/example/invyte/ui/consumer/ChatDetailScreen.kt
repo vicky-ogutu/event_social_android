@@ -1,4 +1,4 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.ui.consumer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

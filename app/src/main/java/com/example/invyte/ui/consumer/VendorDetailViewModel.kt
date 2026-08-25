@@ -1,4 +1,4 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.ui.consumer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

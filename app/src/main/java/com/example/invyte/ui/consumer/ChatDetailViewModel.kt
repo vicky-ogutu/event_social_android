@@ -1,9 +1,10 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.ui.consumer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Message
 import com.example.invyte.data.repository.MessageRepository
+import com.example.invyte.ui.vendor.SocketManager
 import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 
 @HiltViewModel

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.invyte"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.places)
     implementation(libs.compose.material3)
+    implementation(libs.androidx.tv.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -107,6 +108,9 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer-hls:2.19.1") // optional, for HLS
 
     implementation("io.socket:socket.io-client:2.1.0") // or latest
+
+    implementation("io.agora.rtc:full-sdk:4.3.0")
+
 
 
 

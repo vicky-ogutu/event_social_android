@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Event
 import com.example.invyte.data.model.EventRequest
 import com.example.invyte.data.repository.EventRepository
+import com.example.invyte.ui.vendor.SocketManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 sealed class EventsUiState {
@@ -36,7 +38,8 @@ sealed class EventActionUiState {
 
 @HiltViewModel
 class EventViewModel @Inject constructor(
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val socketManager: SocketManager
 ) : ViewModel() {
 
     // For listing events (public)
@@ -175,6 +178,8 @@ class EventViewModel @Inject constructor(
     fun joinEvent(id: Int, accessCode: String) {
         viewModelScope.launch {
             _actionState.value = EventActionUiState.Loading
+            socketManager.connect()
+            socketManager.joinEvent(id)
             try {
                 val response = eventRepository.joinEvent(id, accessCode)
                 if (response.success) {
@@ -220,5 +225,12 @@ class EventViewModel @Inject constructor(
 
     fun resetDetailState() {
         _detailState.value = EventDetailUiState.Idle
+    }
+
+
+    suspend fun uploadCoverImage(filePart: MultipartBody.Part): Result<String> {
+        val result = eventRepository.uploadCoverImage(filePart)
+        // We'll return the result directly
+        return result
     }
 }

@@ -30,7 +30,7 @@ fun EventDetailScreen(
     navController: NavController,
     eventId: Int,
     viewModel: EventViewModel = hiltViewModel(),
-    socketManager: SocketManager = hiltViewModel()
+    //socketManager: SocketManager = hiltViewModel()
 ) {
     val detailState by viewModel.detailState.collectAsState()
     val actionState by viewModel.actionState.collectAsState()
@@ -39,8 +39,8 @@ fun EventDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.getEvent(eventId)
         //viewModel.joinEvent(eventId)
-        socketManager.connect()
-        socketManager.joinEvent(eventId)
+        //socketManager.connect()
+       // socketManager.joinEvent(eventId)
     }
 
     Scaffold(

@@ -25,16 +25,16 @@ import com.example.invyte.ui.event.EventCreateScreen
 import com.example.invyte.ui.event.EventDetailScreen
 import com.example.invyte.ui.event.MyEventsScreen
 import com.example.invyte.ui.profile.ProfileScreen
-import com.example.invyte.ui.vendor.BookingScreen
-import com.example.invyte.ui.vendor.ChatDetailScreen
+import com.example.invyte.ui.consumer.BookingScreen
+import com.example.invyte.ui.consumer.ChatDetailScreen
 import com.example.invyte.ui.vendor.ChatScreen
 import com.example.invyte.ui.vendor.ConversationListScreen
 import com.example.invyte.ui.vendor.PortfolioScreen
 import com.example.invyte.ui.vendor.ServicesScreen
 import com.example.invyte.ui.vendor.SocialFeedScreen
 import com.example.invyte.ui.vendor.VendorBookingScreen
-import com.example.invyte.ui.vendor.VendorDetailScreen
-import com.example.invyte.ui.vendor.VendorListScreen
+import com.example.invyte.ui.consumer.VendorDetailScreen
+import com.example.invyte.ui.consumer.VendorListScreen
 import com.example.invyte.ui.vendor.VendorProfileScreen
 import kotlinx.coroutines.flow.firstOrNull
 

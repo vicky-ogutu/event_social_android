@@ -3,6 +3,7 @@ package com.example.invyte.data.repository
 import com.example.invyte.data.model.*
 import com.example.invyte.data.network.ApiService
 import com.example.invyte.utils.safeApiCall
+import okhttp3.MultipartBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -102,7 +103,23 @@ class EventRepository @Inject constructor(
 
         suspend fun getMyEvents(page: Int = 1, limit: Int = 20): Result<EventListResponse> =
         safeApiCall { api.getMyEvents(page, limit) }
-
+    suspend fun uploadCoverImage(filePart: MultipartBody.Part): Result<String> {
+        return try {
+            val response = api.uploadEventCover(filePart)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success) {
+                    Result.success(body.data?.cover_image ?: "")
+                } else {
+                    Result.failure(Exception(body?.message ?: "Upload failed"))
+                }
+            } else {
+                Result.failure(Exception("HTTP ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     suspend fun toggleLike(id: Int): LikeResponse {
         val response = api.toggleLike(id)

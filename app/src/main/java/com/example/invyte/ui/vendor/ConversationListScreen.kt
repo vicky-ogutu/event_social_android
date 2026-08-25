@@ -57,7 +57,7 @@ fun ConversationListScreen(
 
     ) { padding ->
         when (uiState) {
-            //is ConversationListUiState.Loading -> Box(...) { CircularProgressIndicator() }
+            is ConversationListUiState.Loading ->  { CircularProgressIndicator() }
             is ConversationListUiState.Success -> {
                 val conversations = (uiState as ConversationListUiState.Success).conversations
                 LazyColumn(modifier = Modifier.padding(padding)) {
