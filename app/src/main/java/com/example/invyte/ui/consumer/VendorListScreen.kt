@@ -70,14 +70,19 @@ fun VendorListScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val categoriesState by viewModel.categoriesState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var minRating by remember { mutableStateOf<Double?>(null) }
     val scope = rememberCoroutineScope()
-    val categories = listOf("Venue", "Catering", "Music & DJ", "Photography", "Furniture", "Lighting", "MC & Host", "Security", "Transportation", "Entertainment")
 
-    LaunchedEffect(Unit) {
-        viewModel.loadVendors()
+    // Reload vendors when filters change
+    LaunchedEffect(selectedCategory, minRating, searchQuery) {
+        viewModel.loadVendors(
+            category = selectedCategory,
+            minRating = minRating,
+            search = searchQuery.takeIf { it.isNotBlank() }
+        )
     }
 
     Scaffold(
@@ -112,10 +117,7 @@ fun VendorListScreen(
             // Search Bar
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    viewModel.loadVendors(search = it.takeIf { it.isNotBlank() }, category = selectedCategory, minRating = minRating)
-                },
+                onValueChange = { searchQuery = it },
                 label = { Text("Search vendors", color = Color.Gray) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
                 modifier = Modifier
@@ -132,41 +134,61 @@ fun VendorListScreen(
                 shape = RoundedCornerShape(16.dp)
             )
 
-            // Category Filter Chips
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    FilterChip(
-                        selected = selectedCategory == null,
-                        onClick = {
-                            selectedCategory = null
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = null, minRating = minRating)
-                        },
-                        label = { Text("All", color = if (selectedCategory == null) Color.White else Color.Gray) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryPink,
-                            disabledSelectedContainerColor = Color.Gray,
-                            selectedLabelColor = Color.White
-                        )
-                    )
+            // Category Filter Chips (fetched from backend)
+            when (categoriesState) {
+                is CategoriesUiState.Loading -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        repeat(5) {
+                            SkeletonChip(modifier = Modifier.width(80.dp))
+                        }
+                    }
                 }
-                items(categories) { category ->
-                    FilterChip(
-                        selected = selectedCategory == category,
-                        onClick = {
-                            selectedCategory = category
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = category, minRating = minRating)
-                        },
-                        label = { Text(category, color = if (selectedCategory == category) Color.White else Color.Gray) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryPink,
-                            disabledSelectedContainerColor = Color.Gray,
-                            selectedLabelColor = Color.White
-                        )
+                is CategoriesUiState.Success -> {
+                    val categories = (categoriesState as CategoriesUiState.Success).categories
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = selectedCategory == null,
+                                onClick = { selectedCategory = null },
+                                label = { Text("All", color = if (selectedCategory == null) Color.White else Color.Gray) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PrimaryPink,
+                                    disabledSelectedContainerColor = Color.Gray,
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
+                        items(categories) { category ->
+                            FilterChip(
+                                selected = selectedCategory == category.name,
+                                onClick = {
+                                    selectedCategory = if (selectedCategory == category.name) null else category.name
+                                },
+                                label = { Text(category.name, color = if (selectedCategory == category.name) Color.White else Color.Gray) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PrimaryPink,
+                                    disabledSelectedContainerColor = Color.Gray,
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
+                    }
+                }
+                is CategoriesUiState.Error -> {
+                    Text(
+                        text = "Error loading categories: ${(categoriesState as CategoriesUiState.Error).message}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
             }
@@ -183,7 +205,6 @@ fun VendorListScreen(
                         selected = minRating == rating,
                         onClick = {
                             minRating = if (minRating == rating) null else rating
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = selectedCategory, minRating = minRating)
                         },
                         label = { Text("⭐ ${rating}+", color = if (minRating == rating) Color.White else Color.Gray) },
                         colors = FilterChipDefaults.filterChipColors(
@@ -224,6 +245,16 @@ fun VendorListScreen(
         }
     }
 }
+
+@Composable
+fun SkeletonChip(modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFF333333),
+        modifier = modifier.height(36.dp)
+    ) {}
+}
+
 
 @Composable
 fun VendorCard(vendor: Vendor, onClick: () -> Unit) {

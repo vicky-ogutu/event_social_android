@@ -4,6 +4,7 @@ package com.example.invyte.ui.consumer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.invyte.data.model.ServiceCategory
 import com.example.invyte.data.model.VendorListResponse
 import com.example.invyte.data.repository.VendorRepository
 
@@ -14,12 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class VendorListUiState {
-    object Loading : VendorListUiState()
-    data class Success(val data: VendorListResponse) : VendorListUiState()
-    data class Error(val message: String) : VendorListUiState()
-}
-
 @HiltViewModel
 class VendorListViewModel @Inject constructor(
     private val vendorRepo: VendorRepository
@@ -27,6 +22,27 @@ class VendorListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<VendorListUiState>(VendorListUiState.Loading)
     val uiState: StateFlow<VendorListUiState> = _uiState.asStateFlow()
+
+    // 👇 categories state
+    private val _categoriesState = MutableStateFlow<CategoriesUiState>(CategoriesUiState.Loading)
+    val categoriesState: StateFlow<CategoriesUiState> = _categoriesState.asStateFlow()
+
+    init {
+        loadCategories()
+        loadVendors()
+    }
+
+    fun loadCategories() {
+        viewModelScope.launch {
+            _categoriesState.value = CategoriesUiState.Loading
+            val result = vendorRepo.getCategories()
+            _categoriesState.value = if (result.isSuccess) {
+                CategoriesUiState.Success(result.getOrNull() ?: emptyList())
+            } else {
+                CategoriesUiState.Error(result.exceptionOrNull()?.message ?: "Failed to load categories")
+            }
+        }
+    }
 
     fun loadVendors(category: String? = null, minRating: Double? = null, search: String? = null) {
         viewModelScope.launch {
@@ -39,5 +55,17 @@ class VendorListViewModel @Inject constructor(
             }
         }
     }
+}
+
+sealed class VendorListUiState {
+    object Loading : VendorListUiState()
+    data class Success(val data: VendorListResponse) : VendorListUiState()
+    data class Error(val message: String) : VendorListUiState()
+}
+
+sealed class CategoriesUiState {
+    object Loading : CategoriesUiState()
+    data class Success(val categories: List<ServiceCategory>) : CategoriesUiState()
+    data class Error(val message: String) : CategoriesUiState()
 }
 

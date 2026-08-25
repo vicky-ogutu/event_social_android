@@ -29,6 +29,7 @@ import com.example.invyte.data.model.PortfolioResponse
 import com.example.invyte.data.model.RegisterRequest
 import com.example.invyte.data.model.SendChatMessageRequest
 import com.example.invyte.data.model.Service
+import com.example.invyte.data.model.ServiceCategory
 import com.example.invyte.data.model.ServiceRequest
 import com.example.invyte.data.model.ServiceResponse
 import com.example.invyte.data.model.ServicesResponse
@@ -299,6 +300,9 @@ interface ApiService {
     ): Response<ApiResponse<CoverUploadResponse>>
 
     data class CoverUploadResponse(val cover_image: String)
+
+    @GET("api/vendors/categories")
+    suspend fun getCategories(): Response<ApiResponse<List<ServiceCategory>>>
 }
 
 
