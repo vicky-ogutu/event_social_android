@@ -19,6 +19,10 @@ class MessageRepository @Inject constructor(
     suspend fun getConversations(): Result<List<Conversation>> =
         safeApiCall { api.getConversations() }
 
-    suspend fun getConversation(userId: Int, limit: Int = 50, offset: Int = 0): Result<List<Message>> =
+    suspend fun getConversation(
+        userId: Int,
+        limit: Int = 50,
+        offset: Int = 0
+    ): Result<List<Message>> =
         safeApiCall { api.getConversation(userId, limit, offset) }
 }

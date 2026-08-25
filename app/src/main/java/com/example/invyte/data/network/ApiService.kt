@@ -292,4 +292,14 @@ interface ApiService {
         val receiver_id: Int,
         val message: String
     )
+    @Multipart
+    @POST("api/events/upload-cover")
+    suspend fun uploadEventCover(
+        @Part file: MultipartBody.Part
+    ): Response<ApiResponse<CoverUploadResponse>>
+
+    data class CoverUploadResponse(val cover_image: String)
 }
+
+
+

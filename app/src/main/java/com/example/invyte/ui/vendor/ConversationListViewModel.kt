@@ -35,7 +35,7 @@ class ConversationListViewModel @Inject constructor(
             _uiState.value = ConversationListUiState.Loading
             val result = repo.getConversations()
             _uiState.value = if (result.isSuccess) {
-                ConversationListUiState.Success((result.getOrNull() ?: emptyList()) as List<Conversation>)
+                ConversationListUiState.Success(result.getOrNull() ?: emptyList())
             } else {
                 ConversationListUiState.Error(result.exceptionOrNull()?.message ?: "Error")
             }

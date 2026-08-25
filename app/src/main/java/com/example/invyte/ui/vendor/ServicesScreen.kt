@@ -28,7 +28,7 @@ import kotlin.String
 @Composable
 fun ServicesScreen(
     navController: NavController,
-    paddingValues: PaddingValues = PaddingValues(0.dp),  // ← accepts padding
+    paddingValues: PaddingValues = PaddingValues(10.dp),  // ← accepts padding
     viewModel: VendorViewModel = hiltViewModel()
 ) {
     val servicesState by viewModel.servicesState.collectAsState()
@@ -40,6 +40,10 @@ fun ServicesScreen(
     }
 
     val currentState = servicesState
+
+
+
+
 
     // ✅ Apply padding to avoid overlap with top bar
     Box(
@@ -146,7 +150,7 @@ fun ServiceCard(
                     color = Color.White
                 )
                 Text(
-                    text = "Price: KSH ${service.basePrice ?: 0.0}",
+                    text = "Price:  ${service.basePrice ?: 0.0}",
                     color = Color.Gray
                 )
                 // ✅ Fixed: Show category ID (or category name if available)

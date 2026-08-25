@@ -55,17 +55,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(eventId1: Int, message: String) {
+    fun sendMessage(message: String) {
         val eventId = currentEventId ?: return
         if (message.isBlank()) return
         viewModelScope.launch {
-            val userId = tokenManager.getUserIdSync() ?: 0
-            socketManager.sendMessage(eventId, message, userId)
-            // Optimistic update (optional)
+            // No userId – server uses socket.userId
+            socketManager.sendMessage(eventId, message)
+            // optimistic update
             val dummy = ChatMessage(
                 id = 0,
                 event_id = eventId,
-                user_id = userId,
+                user_id = tokenManager.getUserIdSync() ?: 0,
                 message = message,
                 message_type = "text",
                 media_url = null,
@@ -77,6 +77,7 @@ class ChatViewModel @Inject constructor(
             _messages.value = _messages.value + dummy
         }
     }
+
 
     fun leaveChat() {
         currentEventId?.let { socketManager.leaveEvent(it) }

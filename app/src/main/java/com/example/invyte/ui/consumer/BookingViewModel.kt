@@ -1,23 +1,20 @@
-package com.example.invyte.ui.vendor
-
+package com.example.invyte.ui.consumer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.invyte.data.model.Booking
 import com.example.invyte.data.model.CreateBookingRequest
 import com.example.invyte.data.model.Event
 import com.example.invyte.data.model.Service
 import com.example.invyte.data.repository.BookingRepository
 import com.example.invyte.data.repository.EventRepository
 import com.example.invyte.data.repository.VendorRepository
+import com.example.invyte.ui.BookingUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.invyte.ui.BookingUiState
-import com.github.kittinunf.result.success
 
 @HiltViewModel
 class BookingViewModel @Inject constructor(

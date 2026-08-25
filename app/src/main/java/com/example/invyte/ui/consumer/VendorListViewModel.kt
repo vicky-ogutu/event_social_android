@@ -1,4 +1,4 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.ui.consumer
 
 
 

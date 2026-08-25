@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.example.invyte.ui.BookingUiState
+import com.example.invyte.ui.consumer.BookingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
