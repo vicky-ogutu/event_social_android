@@ -12,7 +12,8 @@ data class PortfolioItem(
     val description: String?,
     val event_date: String?,
     val likes_count: Int,
-    val is_cover: Boolean,
+    //val is_cover: Boolean,
+    val is_cover: Int,
     val caption: String?,
     @SerializedName("created_at") val createdAt: String?
 
