@@ -13,7 +13,8 @@ data class Livestream(
     val actual_end: String?,
     val recording_url: String?,
     val total_revenue: Double,
-    val event_name: String?
+    val event_name: String?,
+    val organizer_id: Int
 )
 
 data class CreateLivestreamRequest(
@@ -29,4 +30,19 @@ data class LivestreamPurchaseRequest(
 
 data class LivestreamAccessResponse(
     val access_token: String
+)
+
+
+data class LivestreamListResponse(
+    val data: List<Livestream>,
+    val total: Int,
+    val page: Int,
+    val limit: Int,
+    val pages: Int
+)
+
+data class LivestreamTokenResponse(
+    val token: String,
+    val channel_name: String,
+    val stream_url: String
 )

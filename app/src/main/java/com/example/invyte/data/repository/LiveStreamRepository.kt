@@ -3,7 +3,9 @@ package com.example.invyte.data.repository
 import com.example.invyte.data.model.CreateLivestreamRequest
 import com.example.invyte.data.model.Livestream
 import com.example.invyte.data.model.LivestreamAccessResponse
+import com.example.invyte.data.model.LivestreamListResponse
 import com.example.invyte.data.model.LivestreamPurchaseRequest
+import com.example.invyte.data.model.LivestreamTokenResponse
 import com.example.invyte.data.model.PaymentIntentResponse
 import com.example.invyte.data.network.ApiService
 import com.example.invyte.utils.safeApiCall
@@ -36,4 +38,11 @@ class LivestreamRepository @Inject constructor(
                 paymentIntentId
             )
         ) }
+
+
+    suspend fun listLivestreams(eventId: Int? = null, status: String? = "live", page: Int = 1, limit: Int = 20): Result<LivestreamListResponse> =
+        safeApiCall { api.listLivestreams(eventId, status, page, limit) }
+
+    suspend fun getLivestreamToken(id: Int): Result<LivestreamTokenResponse> =
+        safeApiCall { api.getLivestreamToken(id) }
 }

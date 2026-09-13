@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Message
 import com.example.invyte.data.repository.MessageRepository
-import com.example.invyte.ui.vendor.SocketManager
+import com.example.invyte.utils.SocketManager
 import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

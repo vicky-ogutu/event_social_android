@@ -22,7 +22,6 @@ import com.example.invyte.data.model.Event
 import com.example.invyte.ui.theme.FieldBorder
 import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
-import com.example.invyte.ui.vendor.SocketManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

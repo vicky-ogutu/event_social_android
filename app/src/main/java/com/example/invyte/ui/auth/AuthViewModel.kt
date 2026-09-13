@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.LoginRequest
 import com.example.invyte.data.model.RegisterRequest
 import com.example.invyte.data.repository.AuthRepository
-import com.example.invyte.ui.vendor.SocketManager
+import com.example.invyte.utils.SocketManager
 import com.example.invyte.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -27,6 +27,10 @@ import com.example.invyte.ui.event.MyEventsScreen
 import com.example.invyte.ui.profile.ProfileScreen
 import com.example.invyte.ui.consumer.BookingScreen
 import com.example.invyte.ui.consumer.ChatDetailScreen
+import com.example.invyte.ui.consumer.CreateLivestreamScreen
+import com.example.invyte.ui.consumer.LivestreamListScreen
+import com.example.invyte.ui.consumer.LivestreamScreen
+import com.example.invyte.ui.consumer.SelectEventForLivestreamScreen
 import com.example.invyte.ui.vendor.ChatScreen
 import com.example.invyte.ui.vendor.ConversationListScreen
 import com.example.invyte.ui.vendor.PortfolioScreen
@@ -167,6 +171,22 @@ fun NavGraph(
         composable("chat/{userId}") { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: 0
             ChatDetailScreen(navController, userId)
+        }
+
+        composable("livestreams") {
+            LivestreamListScreen(navController)
+        }
+        composable("livestream_player/{livestreamId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("livestreamId")?.toIntOrNull() ?: 0
+            LivestreamScreen(navController, id)
+        }
+
+        composable("select_event_for_livestream") {
+            SelectEventForLivestreamScreen(navController)
+        }
+        composable("create_livestream/{eventId}") { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull() ?: 0
+            CreateLivestreamScreen(navController, eventId)
         }
 
 

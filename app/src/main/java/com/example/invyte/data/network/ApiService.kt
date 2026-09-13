@@ -21,7 +21,9 @@ import com.example.invyte.data.model.JoinEventRequest
 import com.example.invyte.data.model.LikeResponse
 import com.example.invyte.data.model.Livestream
 import com.example.invyte.data.model.LivestreamAccessResponse
+import com.example.invyte.data.model.LivestreamListResponse
 import com.example.invyte.data.model.LivestreamPurchaseRequest
+import com.example.invyte.data.model.LivestreamTokenResponse
 import com.example.invyte.data.model.LoginRequest
 import com.example.invyte.data.model.Message
 import com.example.invyte.data.model.PaymentIntentResponse
@@ -273,6 +275,18 @@ interface ApiService {
     @POST("api/livestream/{id}/purchase")
     suspend fun purchaseLivestream(@Path("id") id: Int): Response<ApiResponse<PaymentIntentResponse>>
 
+
+    @GET("api/livestreams")
+    suspend fun listLivestreams(
+        @Query("event_id") eventId: Int? = null,
+        @Query("status") status: String? = "live",
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 20
+    ): Response<ApiResponse<LivestreamListResponse>>
+
+    @GET("api/livestream/{id}/token")
+    suspend fun getLivestreamToken(@Path("id") id: Int): Response<ApiResponse<LivestreamTokenResponse>>
+
     @POST("api/livestream/confirm-purchase")
     suspend fun confirmLivestreamPurchase(@Body request: LivestreamPurchaseRequest): Response<ApiResponse<LivestreamAccessResponse>>
 
@@ -303,6 +317,8 @@ interface ApiService {
 
     @GET("api/vendors/categories")
     suspend fun getCategories(): Response<ApiResponse<List<ServiceCategory>>>
+
+
 }
 
 

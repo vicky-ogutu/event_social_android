@@ -1,9 +1,8 @@
-package com.example.invyte.ui.vendor
+package com.example.invyte.utils
 
 import com.example.invyte.Constants
 import com.example.invyte.data.model.ChatMessage
 import com.example.invyte.data.model.Message
-import com.example.invyte.utils.TokenManager
 
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -11,21 +10,30 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.collections.get
+
 
 @Singleton
 class SocketManager @Inject constructor(
     private val tokenManager: TokenManager
 ) {
     private var socket: Socket? = null
+
+    // Event chat messages
     private val _newMessage = MutableSharedFlow<ChatMessage>()
     val newMessage: SharedFlow<ChatMessage> = _newMessage
 
-    // consume <->  vendor
+    // Private messages (consumer <-> vendor)
     private val _newPrivateMessage = MutableSharedFlow<Message>()
     val newPrivateMessage: SharedFlow<Message> = _newPrivateMessage
+
+    // Livestream signaling events
+    private val _livestreamEvents = MutableSharedFlow<LivestreamEvent>()
+    val livestreamEvents: SharedFlow<LivestreamEvent> = _livestreamEvents.asSharedFlow()
 
     suspend fun connect() {
         if (socket?.connected() == true) return
@@ -44,6 +52,7 @@ class SocketManager @Inject constructor(
             on(Socket.EVENT_DISCONNECT) { println("Socket disconnected") }
             on(Socket.EVENT_CONNECT_ERROR) { args -> println("Socket error: ${args.joinToString()}") }
 
+            // ---- Event chat ----
             on("new-message") { args ->
                 try {
                     val data = args[0] as Map<*, *>
@@ -63,6 +72,7 @@ class SocketManager @Inject constructor(
                 } catch (e: Exception) { e.printStackTrace() }
             }
 
+            // ---- Private messages ----
             on("new-private-message") { args ->
                 try {
                     val data = args[0] as Map<*, *>
@@ -78,15 +88,60 @@ class SocketManager @Inject constructor(
                     CoroutineScope(Dispatchers.IO).launch { _newPrivateMessage.emit(msg) }
                 } catch (e: Exception) { e.printStackTrace() }
             }
+
+            // ---- Livestream signaling ----
+            on("transport-created") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("transport-created", data))
+                }
+            }
+            on("offer") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("offer", data))
+                }
+            }
+            on("answer") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("answer", data))
+                }
+            }
+            on("ice-candidate") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("ice-candidate", data))
+                }
+            }
+            on("stream-available") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("stream-available", data))
+                }
+            }
+            on("broadcaster-left") { args ->
+                val data = args[0] as Map<*, *>
+                CoroutineScope(Dispatchers.IO).launch {
+                    _livestreamEvents.emit(LivestreamEvent("broadcaster-left", data))
+                }
+            }
+
             connect()
         }
     }
 
+    // ---- Utility emit method ----
+    fun emit(event: String, data: Any?) {
+        socket?.emit(event, data)
+    }
+
+    // ---- Event joining / leaving ----
     fun joinEvent(eventId: Int) { socket?.emit("join-event", eventId) }
     fun leaveEvent(eventId: Int) { socket?.emit("leave-event", eventId) }
     fun joinPrivate(userId: Int) { socket?.emit("join-private", userId) }
 
-    // Remove userId parameter – server will use authenticated user
+    // ---- Sending messages ----
     fun sendMessage(eventId: Int, message: String, messageType: String = "text", mediaUrl: String? = null) {
         val data = mapOf(
             "eventId" to eventId,
@@ -104,3 +159,5 @@ class SocketManager @Inject constructor(
     fun disconnect() { socket?.disconnect(); socket = null }
     fun isConnected(): Boolean = socket?.connected() == true
 }
+
+data class LivestreamEvent(val type: String, val data: Map<*, *>)
