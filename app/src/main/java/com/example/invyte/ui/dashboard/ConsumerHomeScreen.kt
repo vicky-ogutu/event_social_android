@@ -25,7 +25,6 @@ import com.example.invyte.ui.theme.FieldBorder
 import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
 import com.example.invyte.ui.common.EventCard
-import com.example.invyte.ui.consumer.LivestreamListScreen
 import com.example.invyte.ui.event.MyEventsScreen
 import com.example.invyte.ui.vendor.ConversationListScreen
 import com.example.invyte.ui.consumer.VendorListScreen
@@ -174,7 +173,6 @@ fun ConsumerHomeScreen(
                 )
                 2 -> MyEventsScreen(navController)    // Reuse existing MyEventsScreen
                 3 -> ConversationListScreen(navController) // Messages
-                4 -> LivestreamListScreen(navController)
             }
         }
     }
