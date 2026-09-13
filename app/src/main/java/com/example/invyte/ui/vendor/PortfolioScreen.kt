@@ -1,8 +1,7 @@
 package com.example.invyte.ui.vendor
 
 import android.net.Uri
-import android.widget.MediaController
-import android.widget.VideoView
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -12,8 +11,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -38,6 +38,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortfolioScreen(
     navController: NavController,
@@ -50,6 +51,11 @@ fun PortfolioScreen(
     // State for file picking
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var showUploadDialog by remember { mutableStateOf(false) }
+
+    // 👇 Handle system back press
+    BackHandler(enabled = true) {
+        navController.navigateUp()
+    }
 
     // File picker – allows both images and videos
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -65,54 +71,76 @@ fun PortfolioScreen(
         viewModel.getPortfolio()
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .padding(paddingValues)
-    ) {
-        when (val currentState = portfolioState) {
-            is PortfolioUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            is PortfolioUiState.PortfolioLoaded -> {
-                val items = currentState.items
-                if (items.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No portfolio items yet.", color = Color.Gray)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("My Portfolio", color = Color.White) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(items) { item ->
-                            PortfolioItemCard(item)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1A1A1A)
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { filePickerLauncher.launch("*/*") },
+                containerColor = PrimaryPink,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Upload", tint = Color.White)
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF121212))
+                .padding(innerPadding)
+                .padding(paddingValues)
+        ) {
+            when (val currentState = portfolioState) {
+                is PortfolioUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = PrimaryPink)
+                    }
+                }
+                is PortfolioUiState.PortfolioLoaded -> {
+                    val items = currentState.items
+                    if (items.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("No portfolio items yet.", color = Color.Gray, fontSize = 16.sp)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text("Tap + to upload your first item", color = Color.Gray, fontSize = 12.sp)
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(items) { item ->
+                                PortfolioItemCard(item)
+                            }
                         }
                     }
                 }
-            }
-            is PortfolioUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Error: ${currentState.message}", color = Color.Red)
+                is PortfolioUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Error: ${currentState.message}", color = Color.Red)
+                    }
                 }
+                else -> Unit
             }
-            else -> Unit
-        }
-
-        // FAB – now uses "*/*" to accept any media
-        FloatingActionButton(
-            onClick = { filePickerLauncher.launch("*/*") }, // allows images & videos
-            containerColor = Color(0xFFE91E63),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Upload", tint = Color.White)
         }
     }
 
@@ -134,9 +162,9 @@ fun PortfolioScreen(
                         onValueChange = { caption = it },
                         label = { Text("Caption (optional)", color = Color.Gray) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = colors(
-                            focusedIndicatorColor = PrimaryPink,
-                            unfocusedIndicatorColor = FieldBorder,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryPink,
+                            unfocusedBorderColor = FieldBorder,
                             focusedLabelColor = TextWhite,
                             unfocusedLabelColor = FieldBorder,
                             focusedTextColor = TextWhite,
@@ -149,7 +177,6 @@ fun PortfolioScreen(
                 Button(
                     onClick = {
                         val uri = selectedUri!!
-                        // Detect MIME type from URI
                         val mimeType = context.contentResolver.getType(uri) ?: "image/jpeg"
                         val fileExtension = when {
                             mimeType.startsWith("video/") -> "mp4"
@@ -165,18 +192,17 @@ fun PortfolioScreen(
                             }
                         }
 
-                        // Create multipart body with correct MIME type
+                        // Create multipart body
                         val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
                         val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
 
-                        // Upload
                         viewModel.uploadPortfolio(body, caption.takeIf { it.isNotBlank() })
                         showUploadDialog = false
                         selectedUri = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink)
                 ) {
-                    Text("Upload")
+                    Text("Upload", color = Color.White)
                 }
             },
             dismissButton = {
@@ -192,7 +218,7 @@ fun PortfolioScreen(
     }
 }
 
-// ---------- Portfolio Item Card (supports both image and video) ----------
+// ---------- Portfolio Item Card ----------
 @Composable
 fun PortfolioItemCard(item: PortfolioItem) {
     Card(
@@ -201,17 +227,14 @@ fun PortfolioItemCard(item: PortfolioItem) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
     ) {
         Column {
-            // Determine media type from URL or separate field
             val isVideo = item.mediaType?.startsWith("video") == true ||
                     item.mediaUrl?.contains(".mp4") == true ||
                     item.mediaUrl?.contains(".mov") == true ||
                     item.mediaUrl?.contains(".webm") == true
 
             if (isVideo) {
-                // Video player (ExoPlayer)
                 VideoPlayer(url = item.mediaUrl)
             } else {
-                // Image
                 AsyncImage(
                     model = item.mediaUrl,
                     contentDescription = item.caption ?: "Portfolio",
@@ -233,30 +256,27 @@ fun PortfolioItemCard(item: PortfolioItem) {
     }
 }
 
-// ---------- Video Player using ExoPlayer ----------
+// ---------- Video Player ----------
 @Composable
 fun VideoPlayer(url: String?) {
     val context = LocalContext.current
 
-    // Create player when URL changes
     val player = remember(url) {
         url?.let {
             ExoPlayer.Builder(context).build().apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(it)))
                 prepare()
-                playWhenReady = false // start paused
+                playWhenReady = false
             }
         }
     }
 
-    // Release player on dispose
     DisposableEffect(player) {
         onDispose {
             player?.release()
         }
     }
 
-    // Capture player in a local variable to avoid label issues
     val currentPlayer = player
 
     AndroidView(
