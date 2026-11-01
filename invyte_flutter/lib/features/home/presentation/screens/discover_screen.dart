@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../app/router.dart';
 import '../../../../core/widgets/state_views.dart';
 import '../../../events/domain/entities/event.dart';
 import '../../../events/presentation/providers/event_providers.dart';
@@ -110,7 +112,12 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> with SingleTick
               _VendorResults(
                 query: _query,
                 category: _category,
-                onCategory: (c) => setState(() => _category = c),
+                onCategory: (c) {
+                  setState(() => _category = c);
+                  // Keep the URL in step so a later home-screen link to any
+                  // category counts as a change in didUpdateWidget.
+                  context.go(Routes.discoverWith(category: c));
+                },
               ),
               _EventResults(query: _query),
             ],
