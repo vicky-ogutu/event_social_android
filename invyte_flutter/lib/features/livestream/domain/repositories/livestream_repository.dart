@@ -1,6 +1,9 @@
 import '../entities/livestream.dart';
 
 abstract interface class LivestreamRepository {
+  /// Permission to join the stream's video room; refused without access.
+  Future<LiveJoinInfo> joinInfo(int livestreamId);
+
   /// The event's scheduled or live broadcast, or `null` if there is none.
   Future<Livestream?> forEvent(int eventId);
 

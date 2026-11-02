@@ -10,6 +10,9 @@ abstract interface class RealtimeService {
   Stream<Json> get eventMessages;
   Stream<Json> get privateMessages;
 
+  /// Fires when the connection comes back after a drop.
+  Stream<void> get reconnected;
+
   void connect();
   void disconnect();
   void joinEvent(int eventId);
@@ -39,6 +42,11 @@ class SocketRealtimeService implements RealtimeService {
   final _privateMessages = StreamController<Json>.broadcast();
   final _channels = <String, StreamController<Json>>{};
   final _joinedEvents = <int>{};
+  final _reconnected = StreamController<void>.broadcast();
+  bool _connectedBefore = false;
+
+  @override
+  Stream<void> get reconnected => _reconnected.stream;
 
   @override
   Stream<Json> get eventMessages => _eventMessages.stream;
@@ -54,7 +62,7 @@ class SocketRealtimeService implements RealtimeService {
       io.OptionBuilder()
           .setTransports(['websocket'])
           .enableReconnection()
-          .setReconnectionAttempts(5)
+          .setReconnectionAttempts(60)
           .setReconnectionDelay(1000)
           .disableAutoConnect()
           .build(),
@@ -68,6 +76,8 @@ class SocketRealtimeService implements RealtimeService {
         for (final id in _joinedEvents) {
           socket.emit('join-event', id);
         }
+        if (_connectedBefore) _reconnected.add(null);
+        _connectedBefore = true;
       })
       ..connect();
     for (final event in _channels.keys) {
@@ -124,6 +134,7 @@ class SocketRealtimeService implements RealtimeService {
     _joinedEvents.clear();
     _eventMessages.close();
     _privateMessages.close();
+    _reconnected.close();
     for (final c in _channels.values) {
       c.close();
     }

@@ -27,9 +27,9 @@ class VendorRemoteDataSource {
 
   Future<Json> updateProfile(Json body) async => asJson(await _api.put('api/vendors/profile', body: body));
 
-  Future<Json> payoutStatus() async => asJson(await _api.get('api/vendors/payouts/status'));
+  Future<Json> payoutStatus() async => asJson(await _api.get('api/users/payouts/status'));
 
-  Future<Json> startPayoutOnboarding() async => asJson(await _api.post('api/vendors/payouts/onboard'));
+  Future<Json> startPayoutOnboarding() async => asJson(await _api.post('api/users/payouts/onboard'));
 
   Future<Object?> myServices() => _api.get('api/vendors/services');
 

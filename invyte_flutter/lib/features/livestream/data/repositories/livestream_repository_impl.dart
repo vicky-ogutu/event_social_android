@@ -11,6 +11,12 @@ class LivestreamRepositoryImpl implements LivestreamRepository {
   final LivestreamRemoteDataSource _remote;
 
   @override
+  Future<LiveJoinInfo> joinInfo(int livestreamId) => guard(() async {
+        final json = await _remote.joinInfo(livestreamId);
+        return LiveJoinInfo(url: asString(json['url']), token: asString(json['token']));
+      });
+
+  @override
   Future<Livestream?> forEvent(int eventId) => guard(() async {
         final data = await _remote.forEvent(eventId);
         return data is Map ? LivestreamMapper.fromJson(asJson(data)) : null;

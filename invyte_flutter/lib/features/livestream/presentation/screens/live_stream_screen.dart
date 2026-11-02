@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:livekit_client/livekit_client.dart' show VideoTrack, VideoTrackRenderer, VideoViewFit;
 
 import '../../../../core/di/core_providers.dart';
 import '../../../../core/payments/payment_gateway.dart';
@@ -16,7 +16,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../events/domain/entities/event.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../../../social/presentation/providers/social_providers.dart';
-import '../../data/webrtc/live_sessions.dart';
+import '../../data/live/live_sessions.dart';
 import '../../domain/entities/livestream.dart';
 import '../providers/livestream_providers.dart';
 
@@ -58,23 +58,24 @@ class _LiveView extends ConsumerStatefulWidget {
 }
 
 class _LiveViewState extends ConsumerState<_LiveView> {
-  final _renderer = RTCVideoRenderer();
   late Livestream? _stream = widget.initialStream;
   LiveBroadcast? _broadcast;
   LiveViewer? _viewer;
-  bool _rendererReady = false;
   bool _broadcasting = false;
   bool _busy = false;
+  bool _startingViewer = false;
   DateTime? _onAirSince;
+  late final _passPrice = TextEditingController(
+    text: (widget.initialStream?.price ?? 0) > 0 ? widget.initialStream!.price.toStringAsFixed(2) : '',
+  );
 
   bool get _isHost => ref.read(currentUserProvider)?.id == widget.event.organizerId;
 
   @override
   void initState() {
     super.initState();
-    _renderer.initialize().then((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      setState(() => _rendererReady = true);
       final s = _stream;
       if (!_isHost && s != null && s.isLive && s.hasAccess) _watch(s);
     });
@@ -84,7 +85,7 @@ class _LiveViewState extends ConsumerState<_LiveView> {
   void dispose() {
     _broadcast?.dispose();
     _viewer?.dispose();
-    _renderer.dispose();
+    _passPrice.dispose();
     super.dispose();
   }
 
@@ -95,9 +96,10 @@ class _LiveViewState extends ConsumerState<_LiveView> {
     final repo = ref.read(livestreamRepositoryProvider);
     LiveBroadcast? broadcast;
     try {
-      final stream = await repo.prepare(widget.event.id);
-      broadcast = ref.read(liveSessionFactoryProvider).broadcast(stream.id);
-      _renderer.srcObject = await broadcast.openCamera();
+      final price = double.tryParse(_passPrice.text.trim()) ?? 0;
+      final stream = await repo.prepare(widget.event.id, price: price);
+      broadcast = ref.read(liveSessionFactoryProvider).broadcast(stream.id, await repo.joinInfo(stream.id));
+      await broadcast.openCamera();
       await repo.start(stream.id);
       await broadcast.goLive();
       _broadcast = broadcast;
@@ -111,7 +113,6 @@ class _LiveViewState extends ConsumerState<_LiveView> {
       }
     } catch (e) {
       await broadcast?.dispose();
-      _renderer.srcObject = null;
       if (mounted) showErrorSnack(context, e);
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -177,14 +178,18 @@ class _LiveViewState extends ConsumerState<_LiveView> {
   }
 
   Future<void> _watch(Livestream stream) async {
-    if (_viewer != null) return;
-    final viewer = ref.read(liveSessionFactoryProvider).viewer(stream.id);
-    _viewer = viewer;
-    viewer.remoteStream.addListener(() => _renderer.srcObject = viewer.remoteStream.value);
+    if (_viewer != null || _startingViewer) return;
+    _startingViewer = true;
     try {
+      final joinInfo = await ref.read(livestreamRepositoryProvider).joinInfo(stream.id);
+      if (!mounted) return;
+      final viewer = ref.read(liveSessionFactoryProvider).viewer(stream.id, joinInfo);
+      _viewer = viewer;
       await viewer.join();
     } catch (e) {
       if (mounted) showErrorSnack(context, e);
+    } finally {
+      _startingViewer = false;
     }
     if (mounted) setState(() {});
   }
@@ -205,7 +210,6 @@ class _LiveViewState extends ConsumerState<_LiveView> {
       children: [
         _Surface(
           event: e,
-          renderer: _rendererReady ? _renderer : null,
           broadcast: _broadcast,
           viewer: _viewer,
           isHostLive: host && _broadcasting,
@@ -241,6 +245,7 @@ class _LiveViewState extends ConsumerState<_LiveView> {
                   stream: stream,
                   busy: _busy,
                   event: e,
+                  passPrice: _passPrice,
                   onStart: _goLive,
                   onPurchase: _getPass,
                 ),
@@ -258,7 +263,6 @@ class _LiveViewState extends ConsumerState<_LiveView> {
 class _Surface extends StatelessWidget {
   const _Surface({
     required this.event,
-    required this.renderer,
     required this.broadcast,
     required this.viewer,
     required this.isHostLive,
@@ -266,7 +270,6 @@ class _Surface extends StatelessWidget {
   });
 
   final Event event;
-  final RTCVideoRenderer? renderer;
   final LiveBroadcast? broadcast;
   final LiveViewer? viewer;
   final bool isHostLive;
@@ -281,19 +284,16 @@ class _Surface extends StatelessWidget {
         ColoredBox(color: Colors.black.withValues(alpha: 0.55)),
       ],
     );
-    final r = renderer;
-    if (r == null) return backdrop;
-
-    if (isHostLive) {
-      return RTCVideoView(r, mirror: true, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover);
-    }
+    final camera = broadcast?.cameraTrack;
+    if (isHostLive && camera != null) return VideoTrackRenderer(camera, fit: VideoViewFit.cover);
     final v = viewer;
     if (v == null) return backdrop;
     return ValueListenableBuilder<ViewerState>(
       valueListenable: v.state,
       builder: (context, state, _) {
-        if (state == ViewerState.playing) {
-          return RTCVideoView(r, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover);
+        final VideoTrack? video = v.remoteVideo.value;
+        if (state == ViewerState.playing && video != null) {
+          return VideoTrackRenderer(video, fit: VideoViewFit.cover);
         }
         final message = switch (state) {
           ViewerState.hostLeft => 'The host paused the broadcast.\nStay here — it resumes automatically.',
@@ -435,6 +435,7 @@ class _Gate extends StatelessWidget {
     required this.stream,
     required this.busy,
     required this.event,
+    required this.passPrice,
     required this.onStart,
     required this.onPurchase,
   });
@@ -443,6 +444,7 @@ class _Gate extends StatelessWidget {
   final Livestream? stream;
   final bool busy;
   final Event event;
+  final TextEditingController passPrice;
   final VoidCallback onStart;
   final VoidCallback onPurchase;
 
@@ -454,7 +456,7 @@ class _Gate extends StatelessWidget {
       (true, _) => (
           Icons.videocam_rounded,
           'Ready to go live?',
-          'Your camera streams straight to guests, who can watch and chat in real time.',
+          'Guests can watch your camera and chat in real time.',
           'Start broadcast',
           onStart,
         ),
@@ -490,6 +492,23 @@ class _Gate extends StatelessWidget {
               style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(body, textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withValues(alpha: 0.8))),
+          if (host) ...[
+            const SizedBox(height: 20),
+            TextField(
+              controller: passPrice,
+              // A stream's price is fixed once it exists: guests may have paid it.
+              enabled: stream == null && !busy,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Stream pass price (leave empty for free)',
+                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.12),
+                prefixIcon: const Icon(Icons.sell_rounded, color: Colors.white70),
+              ),
+            ),
+          ],
           if (action != null) ...[
             const SizedBox(height: 24),
             PrimaryButton(label: action, loading: busy, onPressed: onTap),

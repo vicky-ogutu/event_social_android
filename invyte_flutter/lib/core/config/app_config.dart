@@ -36,15 +36,4 @@ abstract final class AppConfig {
 
   /// Apple Pay merchant id (iOS only); leave empty to disable Apple Pay.
   static const appleMerchantId = String.fromEnvironment('APPLE_MERCHANT_ID');
-
-  /// Optional TURN relay for live video when peers are behind strict NATs
-  /// (e.g. a self-hosted coturn). STUN alone works on most home/office Wi-Fi.
-  static const turnUrl = String.fromEnvironment('TURN_URL');
-  static const turnUsername = String.fromEnvironment('TURN_USERNAME');
-  static const turnCredential = String.fromEnvironment('TURN_CREDENTIAL');
-
-  static List<Map<String, dynamic>> get iceServers => [
-        {'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']},
-        if (turnUrl.isNotEmpty) {'urls': turnUrl, 'username': turnUsername, 'credential': turnCredential},
-      ];
 }

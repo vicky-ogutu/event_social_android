@@ -1,11 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/config/app_config.dart';
 import '../../../../core/di/core_providers.dart';
 import '../../../../core/realtime/realtime_service.dart';
 import '../../data/datasources/livestream_remote_data_source.dart';
 import '../../data/repositories/livestream_repository_impl.dart';
-import '../../data/webrtc/live_sessions.dart';
+import '../../data/live/live_sessions.dart';
 import '../../domain/entities/livestream.dart';
 import '../../domain/repositories/livestream_repository.dart';
 
@@ -19,7 +18,7 @@ final livestreamForEventProvider = FutureProvider.autoDispose.family<Livestream?
   (ref, eventId) => ref.watch(livestreamRepositoryProvider).forEvent(eventId),
 );
 
-/// Factories for WebRTC sessions; the screen owns and disposes them.
+/// Factories for live video sessions; the screen owns and disposes them.
 final liveSessionFactoryProvider = Provider<LiveSessionFactory>(
   (ref) => LiveSessionFactory(ref.watch(realtimeProvider)),
 );
@@ -29,9 +28,9 @@ class LiveSessionFactory {
 
   final RealtimeService _realtime;
 
-  LiveBroadcast broadcast(int livestreamId) =>
-      LiveBroadcast(realtime: _realtime, livestreamId: livestreamId, iceServers: AppConfig.iceServers);
+  LiveBroadcast broadcast(int livestreamId, LiveJoinInfo joinInfo) =>
+      LiveBroadcast(realtime: _realtime, livestreamId: livestreamId, joinInfo: joinInfo);
 
-  LiveViewer viewer(int livestreamId) =>
-      LiveViewer(realtime: _realtime, livestreamId: livestreamId, iceServers: AppConfig.iceServers);
+  LiveViewer viewer(int livestreamId, LiveJoinInfo joinInfo) =>
+      LiveViewer(realtime: _realtime, livestreamId: livestreamId, joinInfo: joinInfo);
 }

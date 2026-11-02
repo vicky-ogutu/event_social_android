@@ -34,6 +34,17 @@ class Livestream {
   bool get isFree => price <= 0;
 }
 
+/// What a device needs to join a stream's video room.
+class LiveJoinInfo {
+  const LiveJoinInfo({required this.url, required this.token});
+
+  final String url;
+  final String token;
+
+  /// The demo backend has no video server.
+  bool get isDemo => url.isEmpty;
+}
+
 /// Result of asking for a stream pass.
 sealed class StreamPass {
   const StreamPass();

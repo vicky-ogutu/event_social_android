@@ -6,6 +6,8 @@ class LivestreamRemoteDataSource {
 
   final ApiClient _api;
 
+  Future<Json> joinInfo(int id) async => asJson(await _api.post('api/livestream/$id/token'));
+
   Future<Object?> forEvent(int eventId) => _api.get('api/livestream/event/$eventId');
 
   Future<Json> create(int eventId, double price) async =>

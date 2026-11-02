@@ -82,7 +82,7 @@ class DemoBackend {
       // ---- Vendor self-service ----
       ('GET', ['vendors', 'profile']) => _ok(_vendorProfile(_requireVendor(myId))),
       ('POST', ['vendors', 'profile']) => _createVendorProfile(me, body),
-      ('GET', ['vendors', 'payouts', 'status']) => _ok({'has_account': true, 'ready': true}),
+      ('GET', ['users', 'payouts', 'status']) => _ok({'has_account': true, 'ready': true}),
       ('PUT', ['vendors', 'profile']) => _updateVendorProfile(myId, body),
       ('GET', ['vendors', 'services']) =>
         _ok(_services.where((s) => s['vendor_id'] == _requireVendor(myId)['id']).map(_serviceView).toList()),
@@ -156,6 +156,7 @@ class DemoBackend {
       ('POST', ['social', 'chat']) => _sendEventChat(myId, body),
 
       // ---- Livestream ----
+      ('POST', ['livestream', final _, 'token']) => _ok({'url': '', 'token': ''}),
       ('GET', ['livestream', 'event', final eventId]) => _ok(_livestreamFor(asInt(eventId), myId)),
       ('POST', ['livestream']) => _createLivestream(myId, body),
       ('POST', ['livestream', 'confirm-purchase']) => _grantPass(asInt(body['livestream_id']), myId),
@@ -941,6 +942,9 @@ class _DemoRealtime implements RealtimeService {
 
   @override
   Stream<Json> get privateMessages => _backend._privateMessages.stream;
+
+  @override
+  Stream<void> get reconnected => const Stream.empty();
 
   @override
   void connect() {}

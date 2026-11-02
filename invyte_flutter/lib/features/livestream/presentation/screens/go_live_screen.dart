@@ -8,6 +8,7 @@ import '../../../../core/widgets/state_views.dart';
 import '../../../events/domain/entities/event.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../../../events/presentation/widgets/event_cards.dart';
+import '../../../vendors/presentation/widgets/payouts_card.dart';
 
 /// Lets an organizer pick which of their events to broadcast.
 class GoLiveScreen extends ConsumerWidget {
@@ -50,6 +51,8 @@ class GoLiveScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
+                  const SizedBox(height: 12),
+                  const PayoutsCard(),
                 ],
               ),
       ),
