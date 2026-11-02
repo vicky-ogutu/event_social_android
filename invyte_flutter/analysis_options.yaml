@@ -1,0 +1,16 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    prefer_const_constructors: true
+    prefer_final_locals: true
+    always_declare_return_types: true
+    avoid_print: true
+    require_trailing_commas: false
+    sort_child_properties_last: true
+    use_super_parameters: true
+
+analyzer:
+  errors:
+    invalid_annotation_target: ignore

@@ -42,3 +42,10 @@ data class ServicesResponse(
     val message: String,
     val data: List<Service>
 )
+
+data class ServiceCategory(
+    val id: Int,
+    val name: String,
+    val slug: String,
+    val description: String?
+)

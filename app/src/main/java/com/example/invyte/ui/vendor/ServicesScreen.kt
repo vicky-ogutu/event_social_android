@@ -6,9 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults.colors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,86 +20,128 @@ import com.example.invyte.data.model.ServiceRequest
 import com.example.invyte.ui.theme.FieldBorder
 import com.example.invyte.ui.theme.PrimaryPink
 import com.example.invyte.ui.theme.TextWhite
-import kotlin.String
+import androidx.activity.compose.BackHandler
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServicesScreen(
     navController: NavController,
-    paddingValues: PaddingValues = PaddingValues(10.dp),  // ← accepts padding
+    paddingValues: PaddingValues = PaddingValues(0.dp),
     viewModel: VendorViewModel = hiltViewModel()
 ) {
     val servicesState by viewModel.servicesState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var editingService by remember { mutableStateOf<Service?>(null) }
 
+    // 👇 Handle system back press
+    BackHandler(enabled = true) {
+        navController.navigateUp()
+    }
+
     LaunchedEffect(Unit) {
         viewModel.getServices()
     }
 
-    val currentState = servicesState
-
-
-
-
-
-    // ✅ Apply padding to avoid overlap with top bar
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .padding(paddingValues)   // <-- this is the fix
-    ) {
-        when (currentState) {
-            is ServicesUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-            is ServicesUiState.ServicesLoaded -> {
-                val services = currentState.services
-                if (services.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("No services added yet.", color = Color.Gray)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("My Services", color = Color.White) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                } else {
-                    LazyColumn(
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1A1A1A)
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showAddDialog = true },
+                containerColor = PrimaryPink,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Service", tint = Color.White)
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF121212))
+                .padding(innerPadding)
+                .padding(paddingValues)
+        ) {
+            when (val currentState = servicesState) {
+                is ServicesUiState.Loading -> {
+                    Box(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        contentAlignment = Alignment.Center
                     ) {
-                        items(services) { service ->
-                            ServiceCard(
-                                service = service,
-                                onEdit = { editingService = service },
-                                onDelete = { viewModel.deleteService(service.id) }
-                            )
+                        CircularProgressIndicator(color = PrimaryPink)
+                    }
+                }
+                is ServicesUiState.ServicesLoaded -> {
+                    val services = currentState.services
+                    if (services.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "No services added yet.",
+                                    color = Color.Gray,
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Tap + to add your first service",
+                                    color = Color.Gray,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(services) { service ->
+                                ServiceCard(
+                                    service = service,
+                                    onEdit = { editingService = service },
+                                    onDelete = { viewModel.deleteService(service.id) }
+                                )
+                            }
                         }
                     }
                 }
-            }
-            is ServicesUiState.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Error: ${currentState.message}", color = Color.Red)
+                is ServicesUiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Error: ${currentState.message}", color = Color.Red)
+                    }
                 }
+                else -> Unit
             }
-            else -> Unit
-        }
-
-        // Floating Action Button
-        FloatingActionButton(
-            onClick = { showAddDialog = true },
-            containerColor = Color(0xFFE91E63),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Add Service", tint = Color.White)
         }
     }
 
-    // Dialogs (unchanged)
+    // Add dialog
     if (showAddDialog) {
         ServiceDialog(
             onDismiss = { showAddDialog = false },
@@ -112,6 +152,7 @@ fun ServicesScreen(
         )
     }
 
+    // Edit dialog
     editingService?.let { service ->
         ServiceDialog(
             initialService = service,
@@ -124,7 +165,7 @@ fun ServicesScreen(
     }
 }
 
-// ---------- Service Card (null‑safe) ----------
+// ---------- Service Card ----------
 @Composable
 fun ServiceCard(
     service: Service,
@@ -143,19 +184,18 @@ fun ServiceCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = service.serviceName ?: "Unnamed",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White
                 )
                 Text(
-                    text = "Price:  ${service.basePrice ?: 0.0}",
+                    text = "Price: ${service.basePrice ?: 0.0}",
                     color = Color.Gray
                 )
-                // ✅ Fixed: Show category ID (or category name if available)
                 Text(
-                    text = "Category ID: ${service.categoryId ?: 0}",
+                    text = "Category: ${service.categoryName ?: "ID ${service.categoryId ?: 0}"}",
                     color = Color.Gray,
                     fontSize = 12.sp
                 )
@@ -165,17 +205,25 @@ fun ServiceCard(
             }
             Row {
                 IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color(0xFFE91E63))
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit",
+                        tint = PrimaryPink
+                    )
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.Red)
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red
+                    )
                 }
             }
         }
     }
 }
 
-// ---------- Service Dialog (correct fields, null‑safe) ----------
+// ---------- Service Dialog ----------
 @Composable
 fun ServiceDialog(
     initialService: Service? = null,
@@ -189,7 +237,12 @@ fun ServiceDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (initialService == null) "Add Service" else "Edit Service", color = Color.White) },
+        title = {
+            Text(
+                if (initialService == null) "Add Service" else "Edit Service",
+                color = Color.White
+            )
+        },
         text = {
             Column {
                 OutlinedTextField(
@@ -197,9 +250,9 @@ fun ServiceDialog(
                     onValueChange = { categoryId = it },
                     label = { Text("Category ID", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = colors(
-                        focusedIndicatorColor = PrimaryPink,
-                        unfocusedIndicatorColor = FieldBorder,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryPink,
+                        unfocusedBorderColor = FieldBorder,
                         focusedLabelColor = TextWhite,
                         unfocusedLabelColor = FieldBorder,
                         focusedTextColor = TextWhite,
@@ -213,9 +266,9 @@ fun ServiceDialog(
                     onValueChange = { serviceName = it },
                     label = { Text("Service Name", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = colors(
-                        focusedIndicatorColor = PrimaryPink,
-                        unfocusedIndicatorColor = FieldBorder,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryPink,
+                        unfocusedBorderColor = FieldBorder,
                         focusedLabelColor = TextWhite,
                         unfocusedLabelColor = FieldBorder,
                         focusedTextColor = TextWhite,
@@ -229,9 +282,9 @@ fun ServiceDialog(
                     onValueChange = { description = it },
                     label = { Text("Description (optional)", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = colors(
-                        focusedIndicatorColor = PrimaryPink,
-                        unfocusedIndicatorColor = FieldBorder,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryPink,
+                        unfocusedBorderColor = FieldBorder,
                         focusedLabelColor = TextWhite,
                         unfocusedLabelColor = FieldBorder,
                         focusedTextColor = TextWhite,
@@ -245,9 +298,9 @@ fun ServiceDialog(
                     onValueChange = { basePrice = it },
                     label = { Text("Base Price (KSH)", color = Color.Gray) },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = colors(
-                        focusedIndicatorColor = PrimaryPink,
-                        unfocusedIndicatorColor = FieldBorder,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryPink,
+                        unfocusedBorderColor = FieldBorder,
                         focusedLabelColor = TextWhite,
                         unfocusedLabelColor = FieldBorder,
                         focusedTextColor = TextWhite,
@@ -272,9 +325,9 @@ fun ServiceDialog(
                         )
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryPink)
             ) {
-                Text(if (initialService == null) "Add" else "Update")
+                Text(if (initialService == null) "Add" else "Update", color = Color.White)
             }
         },
         dismissButton = {

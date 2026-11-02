@@ -129,6 +129,17 @@ fun ConsumerHomeScreen(
                         unselectedIconColor = Color.Gray
                     )
                 )
+
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.LiveTv, contentDescription = "Live") },
+                    label = { Text("Live") },
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color(0xFFE91E63),
+                        unselectedIconColor = Color.Gray
+                    )
+                )
             }
         },
         floatingActionButton = {

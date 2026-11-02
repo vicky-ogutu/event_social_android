@@ -105,4 +105,7 @@ class VendorRepository @Inject constructor(
 
     suspend fun getVendorServices(id: Int): Result<List<Service>> =
         safeApiCall { api.getVendorServices(id) }
+
+    suspend fun getCategories(): Result<List<ServiceCategory>> =
+        safeApiCall { api.getCategories() }
 }

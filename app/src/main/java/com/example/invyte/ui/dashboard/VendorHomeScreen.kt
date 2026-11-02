@@ -152,7 +152,19 @@ fun VendorHomeScreen(
                             title = "Messages",
                             description = "Chat with clients",
                             onClick = { navController.navigate("messages") },
-                            modifier = Modifier.fillMaxWidth()
+                            //modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        DashboardCard(
+                            icon = Icons.Default.LiveTv,
+                            title = "Go Live",
+                            description = "Start a livestream",
+                            onClick = {
+                                // Navigate to a screen where vendor can select an event
+                                navController.navigate("select_event_for_livestream")
+                            },
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }

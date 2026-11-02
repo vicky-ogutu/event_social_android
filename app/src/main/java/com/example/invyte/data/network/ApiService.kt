@@ -8,7 +8,7 @@ import com.example.invyte.data.model.Comment
 import com.example.invyte.data.model.Conversation
 import com.example.invyte.data.model.CreateBookingRequest
 import com.example.invyte.data.model.CreateCommentRequest
-import com.example.invyte.data.model.CreateLivestreamRequest
+
 import com.example.invyte.data.model.CreatePaymentIntentRequest
 import com.example.invyte.data.model.CreatePostRequest
 import com.example.invyte.data.model.Event
@@ -19,9 +19,6 @@ import com.example.invyte.data.model.EventsResponse
 import com.example.invyte.data.model.GenericResponse
 import com.example.invyte.data.model.JoinEventRequest
 import com.example.invyte.data.model.LikeResponse
-import com.example.invyte.data.model.Livestream
-import com.example.invyte.data.model.LivestreamAccessResponse
-import com.example.invyte.data.model.LivestreamPurchaseRequest
 import com.example.invyte.data.model.LoginRequest
 import com.example.invyte.data.model.Message
 import com.example.invyte.data.model.PaymentIntentResponse
@@ -29,6 +26,7 @@ import com.example.invyte.data.model.PortfolioResponse
 import com.example.invyte.data.model.RegisterRequest
 import com.example.invyte.data.model.SendChatMessageRequest
 import com.example.invyte.data.model.Service
+import com.example.invyte.data.model.ServiceCategory
 import com.example.invyte.data.model.ServiceRequest
 import com.example.invyte.data.model.ServiceResponse
 import com.example.invyte.data.model.ServicesResponse
@@ -257,8 +255,8 @@ interface ApiService {
     @POST("api/social/chat")
     suspend fun sendChatMessage(@Body request: SendChatMessageRequest): Response<ApiResponse<ChatMessage>>
     // -------- Livestream --------
-    @POST("api/livestream")
-    suspend fun createLivestream(@Body request: CreateLivestreamRequest): Response<ApiResponse<Livestream>>
+//    @POST("api/livestream")
+//    suspend fun createLivestream(@Body request: CreateLivestreamRequest): Response<ApiResponse<Livestream>>
 
     @POST("api/livestream/{id}/start")
     suspend fun startLivestream(@Path("id") id: Int): Response<ApiResponse<Unit>>
@@ -266,14 +264,26 @@ interface ApiService {
     @POST("api/livestream/{id}/end")
     suspend fun endLivestream(@Path("id") id: Int): Response<ApiResponse<Unit>>
 
-    @GET("api/livestream/{id}")
-    suspend fun getLivestream(@Path("id") id: Int): Response<ApiResponse<Livestream>>
+//    @GET("api/livestream/{id}")
+//    suspend fun getLivestream(@Path("id") id: Int): Response<ApiResponse<Livestream>>
 
     @POST("api/livestream/{id}/purchase")
     suspend fun purchaseLivestream(@Path("id") id: Int): Response<ApiResponse<PaymentIntentResponse>>
 
-    @POST("api/livestream/confirm-purchase")
-    suspend fun confirmLivestreamPurchase(@Body request: LivestreamPurchaseRequest): Response<ApiResponse<LivestreamAccessResponse>>
+
+//    @GET("api/livestreams")
+//    suspend fun listLivestreams(
+//        @Query("event_id") eventId: Int? = null,
+//        @Query("status") status: String? = "live",
+//        @Query("page") page: Int = 1,
+//        @Query("limit") limit: Int = 20
+//    ): Response<ApiResponse<LivestreamListResponse>>
+
+//    @GET("api/livestream/{id}/token")
+//    suspend fun getLivestreamToken(@Path("id") id: Int): Response<ApiResponse<LivestreamTokenResponse>>
+//
+//    @POST("api/livestream/confirm-purchase")
+//    suspend fun confirmLivestreamPurchase(@Body request: LivestreamPurchaseRequest): Response<ApiResponse<LivestreamAccessResponse>>
 
     @POST("api/messages")
     suspend fun sendMessage(@Body request: SendMessageRequest): Response<ApiResponse<Message>>
@@ -299,6 +309,11 @@ interface ApiService {
     ): Response<ApiResponse<CoverUploadResponse>>
 
     data class CoverUploadResponse(val cover_image: String)
+
+    @GET("api/vendors/categories")
+    suspend fun getCategories(): Response<ApiResponse<List<ServiceCategory>>>
+
+
 }
 
 

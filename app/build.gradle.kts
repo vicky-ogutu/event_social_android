@@ -1,6 +1,6 @@
 plugins {
     id("com.android.application")
-//    id("org.jetbrains.kotlin.android")        // ✅ only this one
+//    id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 
@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.places)
     implementation(libs.compose.material3)
     implementation(libs.androidx.tv.material)
+    implementation(libs.androidx.ui.graphics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -109,9 +110,6 @@ dependencies {
 
     implementation("io.socket:socket.io-client:2.1.0") // or latest
 
-    implementation("io.agora.rtc:full-sdk:4.3.0")
-
-
-
+    implementation("io.github.webrtc-sdk:android:144.7559.01")
 
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.invyte.data.model.Event
 import com.example.invyte.data.model.EventRequest
 import com.example.invyte.data.repository.EventRepository
-import com.example.invyte.ui.vendor.SocketManager
+import com.example.invyte.utils.SocketManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

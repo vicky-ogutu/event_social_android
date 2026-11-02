@@ -1,62 +1,33 @@
 package com.example.invyte.ui.consumer
 
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.invyte.data.model.Vendor
 import com.example.invyte.ui.auth.AuthViewModel
 import com.example.invyte.ui.theme.PrimaryPink
@@ -70,14 +41,19 @@ fun VendorListScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val categoriesState by viewModel.categoriesState.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var minRating by remember { mutableStateOf<Double?>(null) }
     val scope = rememberCoroutineScope()
-    val categories = listOf("Venue", "Catering", "Music & DJ", "Photography", "Furniture", "Lighting", "MC & Host", "Security", "Transportation", "Entertainment")
 
-    LaunchedEffect(Unit) {
-        viewModel.loadVendors()
+    // Reload vendors when filters change
+    LaunchedEffect(selectedCategory, minRating, searchQuery) {
+        viewModel.loadVendors(
+            category = selectedCategory,
+            minRating = minRating,
+            search = searchQuery.takeIf { it.isNotBlank() }
+        )
     }
 
     Scaffold(
@@ -112,12 +88,11 @@ fun VendorListScreen(
             // Search Bar
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    viewModel.loadVendors(search = it.takeIf { it.isNotBlank() }, category = selectedCategory, minRating = minRating)
-                },
+                onValueChange = { searchQuery = it },
                 label = { Text("Search vendors", color = Color.Gray) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+                leadingIcon = {
+                    Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -132,41 +107,72 @@ fun VendorListScreen(
                 shape = RoundedCornerShape(16.dp)
             )
 
-            // Category Filter Chips
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    FilterChip(
-                        selected = selectedCategory == null,
-                        onClick = {
-                            selectedCategory = null
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = null, minRating = minRating)
-                        },
-                        label = { Text("All", color = if (selectedCategory == null) Color.White else Color.Gray) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryPink,
-                            disabledSelectedContainerColor = Color.Gray,
-                            selectedLabelColor = Color.White
-                        )
-                    )
+            // Category Filter Chips (fetched from backend)
+            when (categoriesState) {
+                is CategoriesUiState.Loading -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        repeat(5) {
+                            SkeletonChip(modifier = Modifier.width(80.dp))
+                        }
+                    }
                 }
-                items(categories) { category ->
-                    FilterChip(
-                        selected = selectedCategory == category,
-                        onClick = {
-                            selectedCategory = category
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = category, minRating = minRating)
-                        },
-                        label = { Text(category, color = if (selectedCategory == category) Color.White else Color.Gray) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryPink,
-                            disabledSelectedContainerColor = Color.Gray,
-                            selectedLabelColor = Color.White
-                        )
+                is CategoriesUiState.Success -> {
+                    val categories = (categoriesState as CategoriesUiState.Success).categories
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = selectedCategory == null,
+                                onClick = { selectedCategory = null },
+                                label = {
+                                    Text(
+                                        "All",
+                                        color = if (selectedCategory == null) Color.White else Color.Gray
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PrimaryPink,
+                                    disabledSelectedContainerColor = Color.Gray,
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
+                        items(categories) { category ->
+                            FilterChip(
+                                selected = selectedCategory == category.name,
+                                onClick = {
+                                    selectedCategory =
+                                        if (selectedCategory == category.name) null else category.name
+                                },
+                                label = {
+                                    Text(
+                                        category.name,
+                                        color = if (selectedCategory == category.name) Color.White else Color.Gray
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PrimaryPink,
+                                    disabledSelectedContainerColor = Color.Gray,
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
+                    }
+                }
+                is CategoriesUiState.Error -> {
+                    Text(
+                        text = "Error loading categories: ${(categoriesState as CategoriesUiState.Error).message}",
+                        color = Color.Red,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
             }
@@ -183,9 +189,13 @@ fun VendorListScreen(
                         selected = minRating == rating,
                         onClick = {
                             minRating = if (minRating == rating) null else rating
-                            viewModel.loadVendors(search = searchQuery.takeIf { it.isNotBlank() }, category = selectedCategory, minRating = minRating)
                         },
-                        label = { Text("⭐ ${rating}+", color = if (minRating == rating) Color.White else Color.Gray) },
+                        label = {
+                            Text(
+                                "⭐ ${rating}+",
+                                color = if (minRating == rating) Color.White else Color.Gray
+                            )
+                        },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = PrimaryPink,
                             disabledSelectedContainerColor = Color.Gray,
@@ -210,19 +220,34 @@ fun VendorListScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(data.data) { vendor ->
-                            VendorCard(vendor, onClick = { navController.navigate("vendor_detail/${vendor.id}") })
+                            VendorCard(
+                                vendor = vendor,
+                                onClick = { navController.navigate("vendor_detail/${vendor.id}") }
+                            )
                         }
                     }
                 }
                 is VendorListUiState.Error -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Error: ${(uiState as VendorListUiState.Error).message}", color = Color.Red)
+                        Text(
+                            "Error: ${(uiState as VendorListUiState.Error).message}",
+                            color = Color.Red
+                        )
                     }
                 }
                 else -> Unit
             }
         }
     }
+}
+
+@Composable
+fun SkeletonChip(modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFF333333),
+        modifier = modifier.height(36.dp)
+    ) {}
 }
 
 @Composable
@@ -241,7 +266,7 @@ fun VendorCard(vendor: Vendor, onClick: () -> Unit) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left accent bar (like Google Calendar)
+            // Left accent bar
             Box(
                 modifier = Modifier
                     .width(6.dp)
@@ -251,6 +276,7 @@ fun VendorCard(vendor: Vendor, onClick: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
 
+            // Middle content
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
@@ -309,11 +335,45 @@ fun VendorCard(vendor: Vendor, onClick: () -> Unit) {
                 }
             }
 
-            Icon(
-                Icons.Default.ChevronRight,
-                contentDescription = null,
-                tint = Color.Gray,
-                modifier = Modifier.size(24.dp)
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Trailing circular profile picture
+            VendorAvatar(vendor = vendor)
+        }
+    }
+}
+
+@Composable
+fun VendorAvatar(vendor: Vendor) {
+    val profileUrl = vendor.profile_picture?.takeIf {
+        it.isNotBlank() && !it.contains("undefined")
+    }
+
+    if (profileUrl != null) {
+        AsyncImage(
+            model = profileUrl,
+            contentDescription = "${vendor.business_name} profile picture",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(52.dp)
+                .clip(CircleShape)
+                .border(2.dp, PrimaryPink.copy(alpha = 0.6f), CircleShape)
+                .background(Color(0xFF333333))
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .size(52.dp)
+                .clip(CircleShape)
+                .background(PrimaryPink.copy(alpha = 0.25f))
+                .border(2.dp, PrimaryPink.copy(alpha = 0.6f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = vendor.business_name.firstOrNull()?.uppercase() ?: "?",
+                color = PrimaryPink,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
             )
         }
     }

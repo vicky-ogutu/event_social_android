@@ -1,0 +1,59 @@
+# Demo photo credits
+
+Photos from Wikimedia Commons, used under their licenses (resized and compressed for the app).
+
+- `event_1.jpg`: "The Mansion Outdoor wedding.jpg" by BostonBaby19, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:The_Mansion_Outdoor_wedding.jpg
+- `event_2.jpg`: ""Networking event for journalists with the Estonian startup community" (36739319064).jpg" by EU2017EE Estonian Presidency, CC BY 2.0, https://commons.wikimedia.org/wiki/File:%22Networking_event_for_journalists_with_the_Estonian_startup_community%22_(36739319064).jpg
+- `event_3.jpg`: "Sunday Brunch at Arnauds New Orleans.jpg" by Michael Homan, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Sunday_Brunch_at_Arnauds_New_Orleans.jpg
+- `event_4.jpg`: "Jazz concert in Braga 2.jpg" by Joseolgon, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Jazz_concert_in_Braga_2.jpg
+- `event_5.jpg`: ""Networking event for journalists with the Estonian startup community" (36778735303).jpg" by EU2017EE Estonian Presidency, CC BY 2.0, https://commons.wikimedia.org/wiki/File:%22Networking_event_for_journalists_with_the_Estonian_startup_community%22_(36778735303).jpg
+- `event_6.jpg`: "SIDDHARTH CHOUDHARY solo exhibition of digital canvas prints opening reception- visitors pouring in.jpg" by Siddharthchoudharystudio, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:SIDDHARTH_CHOUDHARY_solo_exhibition_of_digital_canvas_prints_opening_reception-_visitors_pouring_in.jpg
+- `event_7.jpg`: "2022.06.09 Capital Pride Rooftop Pool Party, Washington, DC USA 160 155297 (52137119711).jpg" by Ted Eytan, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:2022.06.09_Capital_Pride_Rooftop_Pool_Party,_Washington,_DC_USA_160_155297_(52137119711).jpg
+- `event_8.jpg`: "Bengali Hindu wedding DSCN1106 08.jpg" by Sumita Roy Dutta, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Bengali_Hindu_wedding_DSCN1106_08.jpg
+- `p1_0.jpg`: "Wedding photographer at work.jpg" by Daniel Case, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Wedding_photographer_at_work.jpg
+- `p1_1.jpg`: "Wedding photographer preparing shot.jpg" by Mike Baird from Morro Bay, USA, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Wedding_photographer_preparing_shot.jpg
+- `p1_2.jpg`: "Wedding photo session in Ryazan Oblast.jpg" by Dmitry Ivanov., CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_photo_session_in_Ryazan_Oblast.jpg
+- `p1_3.jpg`: "Wedding photographers.jpg" by Alethe, Public domain, https://commons.wikimedia.org/wiki/File:Wedding_photographers.jpg
+- `p1_4.jpg`: "Wedding Skyline San Diego 2013.jpg" by Tuxyso, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Wedding_Skyline_San_Diego_2013.jpg
+- `p2_0.jpg`: "Welcome Reception co-hosted by Prime Minister of Japan and Mayor of the City of Yokohama (48636279062).jpg" by TICAD7 Photographs, CC0, https://commons.wikimedia.org/wiki/File:Welcome_Reception_co-hosted_by_Prime_Minister_of_Japan_and_Mayor_of_the_City_of_Yokohama_(48636279062).jpg
+- `p2_1.jpg`: "Canape tray.jpg" by Gandydancer, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Canape_tray.jpg
+- `p2_2.jpg`: "Group enjoys a buffet with various food items including bananas and desserts in a dining setting.jpg" by Shixart1985, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Group_enjoys_a_buffet_with_various_food_items_including_bananas_and_desserts_in_a_dining_setting.jpg
+- `p2_3.jpg`: "Canapés traditionnels en France.jpg" by Pierre André Leclercq, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Canap%C3%A9s_traditionnels_en_France.jpg
+- `p2_4.jpg`: "Canapés dulces y salados, Mazatlán, 29 de noviembre de 2022.jpg" by El Nuevo Doge, CC0, https://commons.wikimedia.org/wiki/File:Canap%C3%A9s_dulces_y_salados,_Mazatl%C3%A1n,_29_de_noviembre_de_2022.jpg
+- `p3_0.jpg`: "Wedding reception stage, decorations, Kochi.jpg" by Vis M, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_reception_stage,_decorations,_Kochi.jpg
+- `p3_1.jpg`: "Chinese Restaurant Wedding Reception.jpg" by Kenneth Lu, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Chinese_Restaurant_Wedding_Reception.jpg
+- `p3_2.jpg`: "Table decorations during reception.jpg" by Jess Mann, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Table_decorations_during_reception.jpg
+- `p3_3.jpg`: "Reception table setting.jpg" by Robert Bejil from Bakersfield, Ca, USA, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Reception_table_setting.jpg
+- `p3_4.jpg`: "Couple holding sign that says love during wedding reception in a decorated venue.jpg" by Shixart1985, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Couple_holding_sign_that_says_love_during_wedding_reception_in_a_decorated_venue.jpg
+- `p4_0.jpg`: "A disc jockey (DJ) photos by mostafa meraji عکس از دی جی در مراسم 10.jpg" by Mostafameraji, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:A_disc_jockey_(DJ)_photos_by_mostafa_meraji_%D8%B9%DA%A9%D8%B3_%D8%A7%D8%B2_%D8%AF%DB%8C_%D8%AC%DB%8C_%D8%AF%D8%B1_%D9%85%D8%B1%D8%A7%D8%B3%D9%85_10.jpg
+- `p4_1.jpg`: "A disc jockey (DJ) photos by mostafa meraji عکس از دی جی در مراسم 09.jpg" by Mostafameraji, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:A_disc_jockey_(DJ)_photos_by_mostafa_meraji_%D8%B9%DA%A9%D8%B3_%D8%A7%D8%B2_%D8%AF%DB%8C_%D8%AC%DB%8C_%D8%AF%D8%B1_%D9%85%D8%B1%D8%A7%D8%B3%D9%85_09.jpg
+- `p4_2.jpg`: "A disc jockey (DJ) photos by mostafa meraji عکس از دی جی در مراسم 07.jpg" by Mostafameraji, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:A_disc_jockey_(DJ)_photos_by_mostafa_meraji_%D8%B9%DA%A9%D8%B3_%D8%A7%D8%B2_%D8%AF%DB%8C_%D8%AC%DB%8C_%D8%AF%D8%B1_%D9%85%D8%B1%D8%A7%D8%B3%D9%85_07.jpg
+- `p4_3.jpg`: "A disc jockey (DJ) photos by mostafa meraji عکس از دی جی در مراسم 08.jpg" by Mostafameraji, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:A_disc_jockey_(DJ)_photos_by_mostafa_meraji_%D8%B9%DA%A9%D8%B3_%D8%A7%D8%B2_%D8%AF%DB%8C_%D8%AC%DB%8C_%D8%AF%D8%B1_%D9%85%D8%B1%D8%A7%D8%B3%D9%85_08.jpg
+- `p4_4.jpg`: "A disc jockey (DJ) photos by mostafa meraji عکس از دی جی در مراسم 06.jpg" by Mostafameraji, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:A_disc_jockey_(DJ)_photos_by_mostafa_meraji_%D8%B9%DA%A9%D8%B3_%D8%A7%D8%B2_%D8%AF%DB%8C_%D8%AC%DB%8C_%D8%AF%D8%B1_%D9%85%D8%B1%D8%A7%D8%B3%D9%85_06.jpg
+- `p5_0.jpg`: "Hochzeit, Pester Serbisch-Orthodoxe Kirche, 2024 Belváros-Lipótváros.jpg" by Globetrotter19, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Hochzeit,_Pester_Serbisch-Orthodoxe_Kirche,_2024_Belv%C3%A1ros-Lip%C3%B3tv%C3%A1ros.jpg
+- `p5_1.jpg`: "Wedding Day Rain Out - Flickr - Sister72.jpg" by Jackie from Monmouth County, NJ, USA, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Wedding_Day_Rain_Out_-_Flickr_-_Sister72.jpg
+- `p5_2.jpg`: "Riversdale Estate garden urns and pathway with 38ha vineyard beyond 2016.jpg" by Riversdale Estate, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Riversdale_Estate_garden_urns_and_pathway_with_38ha_vineyard_beyond_2016.jpg
+- `p5_3.jpg`: "Scarborough House outdoor wedding ceremony.jpg" by SiteBuilderSolutions, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Scarborough_House_outdoor_wedding_ceremony.jpg
+- `p5_4.jpg`: "Sunday Brunch at French Press Lafayette, Louisiana 10.jpg" by Infrogmation of New Orleans, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Sunday_Brunch_at_French_Press_Lafayette,_Louisiana_10.jpg
+- `p6_0.jpg`: "Meribindiya Bridal Makeup.jpg" by Bridalglamguide, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Meribindiya_Bridal_Makeup.jpg
+- `p6_1.jpg`: "Bengali Hindu wedding DSCN1106 17.jpg" by Sumita Roy Dutta, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Bengali_Hindu_wedding_DSCN1106_17.jpg
+- `p6_2.jpg`: "Bengali Hindu wedding DSCN1106 04.jpg" by Sumita Roy Dutta, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Bengali_Hindu_wedding_DSCN1106_04.jpg
+- `p6_3.jpg`: "Makeup artist.jpg" by Fidelis ogunseri ocsfilms, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Makeup_artist.jpg
+- `p6_4.jpg`: "Bengali Hindu wedding DSCN1106 03.jpg" by Sumita Roy Dutta, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Bengali_Hindu_wedding_DSCN1106_03.jpg
+- `p7_0.jpg`: "Wedding cake dessert.jpg" by Leon Brooks, Public domain, https://commons.wikimedia.org/wiki/File:Wedding_cake_dessert.jpg
+- `p7_1.jpg`: "Wedding cake (0).jpg" by Alaa Najjar, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Wedding_cake_(0).jpg
+- `p7_2.jpg`: "Wedding cake in arrangements for a modern wedding at Cotonou town in Benin.jpg" by Adoscam, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_cake_in_arrangements_for_a_modern_wedding_at_Cotonou_town_in_Benin.jpg
+- `p7_3.jpg`: "Wedding cake - Kathmandu, Nepal on 2018.jpg" by Nirmal Dulal, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_cake_-_Kathmandu,_Nepal_on_2018.jpg
+- `p7_4.jpg`: "Twenty tier Wedding cake(1).JPG" by Kiriggwajjo Anatole, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Twenty_tier_Wedding_cake(1).JPG
+- `p8_0.jpg`: "Daimler DB18Consort e2 wedding car3.JPG" by Daimler pics, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/File:Daimler_DB18Consort_e2_wedding_car3.JPG
+- `p8_1.jpg`: "Chev wedding car SA.jpg" by Ossewa, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Chev_wedding_car_SA.jpg
+- `p8_2.jpg`: "Wedding car and Rocca Sforzesca.jpg" by Danysan1, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_car_and_Rocca_Sforzesca.jpg
+- `p8_3.jpg`: "Wedding car, Kish (P1090371).jpg" by Matti Blume, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Wedding_car,_Kish_(P1090371).jpg
+- `p8_4.jpg`: "Pastellfarben 001 2008 08 02.jpg" by Friedrich Haag, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Pastellfarben_001_2008_08_02.jpg
+- `post_1a.jpg`: "Jazz concert in Museu Dom Diogo de Sousa 2026 (2).jpg" by Joseolgon, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Jazz_concert_in_Museu_Dom_Diogo_de_Sousa_2026_(2).jpg
+- `post_1b.jpg`: "Jazz concert in Museu Dom Diogo de Sousa 2026 (1).jpg" by Joseolgon, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Jazz_concert_in_Museu_Dom_Diogo_de_Sousa_2026_(1).jpg
+- `post_2.jpg`: ""Networking event for journalists with the Estonian startup community" (37417753502).jpg" by EU2017EE Estonian Presidency, CC BY 2.0, https://commons.wikimedia.org/wiki/File:%22Networking_event_for_journalists_with_the_Estonian_startup_community%22_(37417753502).jpg
+- `post_3a.jpg`: "SIDDHARTH CHOUDHARY solo exhibition of digital canvas prints opening reception- visitors moving around.jpg" by Siddharthchoudharystudio, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:SIDDHARTH_CHOUDHARY_solo_exhibition_of_digital_canvas_prints_opening_reception-_visitors_moving_around.jpg
+- `post_3b.jpg`: "Vernissage of the exhibition ‘Heidi in Lateinamerika’ (2023) 19.jpg" by HonysTorresArt, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Vernissage_of_the_exhibition_%E2%80%98Heidi_in_Lateinamerika%E2%80%99_(2023)_19.jpg
+- `post_5.jpg`: "Krasnoyarsk Pillars, Wedding photography at sunset, Professional photography, Russia.jpg" by Vyacheslav Argenberg, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Krasnoyarsk_Pillars,_Wedding_photography_at_sunset,_Professional_photography,_Russia.jpg
+- `post_6.jpg`: "2022.06.09 Capital Pride Rooftop Pool Party, Washington, DC USA 160 155355 (52137130186).jpg" by Ted Eytan, CC BY-SA 2.0, https://commons.wikimedia.org/wiki/File:2022.06.09_Capital_Pride_Rooftop_Pool_Party,_Washington,_DC_USA_160_155355_(52137130186).jpg
