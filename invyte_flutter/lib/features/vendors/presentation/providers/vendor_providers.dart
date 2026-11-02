@@ -41,6 +41,10 @@ final myVendorProfileProvider = FutureProvider<VendorProfile?>(
   (ref) => ref.watch(vendorRepositoryProvider).myProfile(),
 );
 
+final payoutsReadyProvider = FutureProvider.autoDispose<bool>(
+  (ref) => ref.watch(vendorRepositoryProvider).payoutsReady(),
+);
+
 final myServicesProvider = FutureProvider<List<VendorService>>(
   (ref) => ref.watch(vendorRepositoryProvider).myServices(),
 );

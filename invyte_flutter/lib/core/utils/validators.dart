@@ -1,8 +1,16 @@
 abstract final class Validators {
   static final _email = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
+  static final _accessCode = RegExp(r'^[A-Za-z0-9]{6,10}$');
+
   static String? required(String? value, [String field = 'This field']) =>
       (value == null || value.trim().isEmpty) ? '$field is required' : null;
+
+  static String? accessCode(String? value) {
+    final missing = required(value, 'Access code');
+    if (missing != null) return missing;
+    return _accessCode.hasMatch(value!.trim()) ? null : 'Use 6 to 10 letters or numbers';
+  }
 
   static String? email(String? value) {
     if (value == null || value.trim().isEmpty) return 'Email is required';

@@ -27,6 +27,7 @@ class Event {
     this.viewCount = 0,
     this.likeCount = 0,
     this.isLiked = false,
+    this.hasJoined = false,
     this.organizerName,
     this.organizerPic,
   });
@@ -51,6 +52,7 @@ class Event {
   final int viewCount;
   final int likeCount;
   final bool isLiked;
+  final bool hasJoined;
   final String? organizerName;
   final String? organizerPic;
 
@@ -83,6 +85,7 @@ class Event {
         viewCount: viewCount,
         likeCount: likeCount ?? this.likeCount,
         isLiked: isLiked ?? this.isLiked,
+        hasJoined: hasJoined,
         organizerName: organizerName,
         organizerPic: organizerPic,
       );

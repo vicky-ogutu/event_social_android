@@ -36,7 +36,9 @@ class _VendorBookingActionsState extends ConsumerState<VendorBookingActions> {
     final ok = await confirmAction(
       context,
       title: 'Decline this request?',
-      message: 'The customer will be notified and can book another vendor.',
+      message: widget.booking.isPaid
+          ? 'The customer gets a full refund and can book another vendor.'
+          : 'The customer will be notified and can book another vendor.',
       confirmLabel: 'Decline',
       destructive: true,
     );
@@ -62,9 +64,12 @@ class _VendorBookingActionsState extends ConsumerState<VendorBookingActions> {
             const SizedBox(width: 12),
             Expanded(
               child: FilledButton(
-                onPressed: _busy != null ? null : () => _run('accept', () => repo.accept(id), 'Booking accepted 🎉'),
+                onPressed: _busy != null || !widget.booking.isPaid
+                    ? null
+                    : () => _run('accept', () => repo.accept(id), 'Booking accepted 🎉'),
                 style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(46)),
-                child: _busy == 'accept' ? const _Spinner(light: true) : const Text('Accept'),
+                child: _busy == 'accept' ? const _Spinner(light: true)
+                    : Text(widget.booking.isPaid ? 'Accept' : 'Awaiting payment'),
               ),
             ),
           ],

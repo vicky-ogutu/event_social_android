@@ -28,6 +28,9 @@ class EventRemoteDataSource {
   Future<Object?> join(int id, String accessCode) =>
       _api.post('api/events/$id/join', body: {'access_code': accessCode});
 
+  Future<Json> joinByCode(String accessCode) async =>
+      asJson(await _api.post('api/events/join', body: {'access_code': accessCode}));
+
   Future<Json> toggleLike(int id) async => asJson(await _api.post('api/events/$id/like'));
 
   Future<Json> uploadCover(String filePath) async =>

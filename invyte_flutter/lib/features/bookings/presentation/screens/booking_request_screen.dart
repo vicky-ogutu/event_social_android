@@ -138,7 +138,6 @@ class _BookingFormState extends ConsumerState<_BookingForm> {
     final theme = Theme.of(context);
     final subtotal = widget.service.basePrice * _quantity;
     final fee = subtotal * AppConfig.estimatedServiceFeeRate;
-    final tax = subtotal * AppConfig.estimatedTaxRate;
 
     return Column(
       children: [
@@ -246,8 +245,7 @@ class _BookingFormState extends ConsumerState<_BookingForm> {
                   subtotal: subtotal,
                   subtotalLabel: '${Fmt.money(widget.service.basePrice)} × $_quantity',
                   serviceFee: fee,
-                  tax: tax,
-                  total: subtotal + fee + tax,
+                  total: subtotal + fee,
                   estimate: true,
                 ),
               ),

@@ -37,6 +37,7 @@ class DemoBackend {
   final _messages = DemoSeed.directMessages();
   final _passwords = <String, String>{};
   final _eventLikes = <(int, int)>{(1, 2)};
+  final _eventGuests = <(int, int)>{};
   final _postLikes = <(int, int)>{(1, 1), (1, 3)};
   final _livestreams = DemoSeed.livestreams();
   final _streamPasses = <(int, int)>{};
@@ -81,6 +82,7 @@ class DemoBackend {
       // ---- Vendor self-service ----
       ('GET', ['vendors', 'profile']) => _ok(_vendorProfile(_requireVendor(myId))),
       ('POST', ['vendors', 'profile']) => _createVendorProfile(me, body),
+      ('GET', ['vendors', 'payouts', 'status']) => _ok({'has_account': true, 'ready': true}),
       ('PUT', ['vendors', 'profile']) => _updateVendorProfile(myId, body),
       ('GET', ['vendors', 'services']) =>
         _ok(_services.where((s) => s['vendor_id'] == _requireVendor(myId)['id']).map(_serviceView).toList()),
@@ -101,7 +103,10 @@ class DemoBackend {
       // ---- Events ----
       ('POST', ['events', 'upload-cover']) => _ok({'cover_image': _storeUpload(request)}),
       ('GET', ['events', 'my-events']) => _ok(_page(
-          _events.where((e) => e['organizer_id'] == myId).map((e) => _eventView(e, myId)).toList()
+          _events
+              .where((e) => e['organizer_id'] == myId || _eventGuests.contains((myId, asInt(e['id']))))
+              .map((e) => _eventView(e, myId))
+              .toList()
             ..sort((a, b) => asString(a['event_date']).compareTo(asString(b['event_date']))),
           q)),
       ('GET', ['events']) => _listEvents(q, myId),
@@ -109,7 +114,8 @@ class DemoBackend {
       ('GET', ['events', final id]) => _getEvent(asInt(id), myId),
       ('PUT', ['events', final id]) => _updateEvent(asInt(id), myId, body),
       ('DELETE', ['events', final id]) => _deleteEvent(asInt(id), myId),
-      ('POST', ['events', final id, 'join']) => _joinEvent(asInt(id), body),
+      ('POST', ['events', 'join']) => _joinEventByCode(myId, body),
+      ('POST', ['events', final id, 'join']) => _joinEvent(asInt(id), myId, body),
       ('POST', ['events', final id, 'like']) => _likeEvent(asInt(id), myId),
 
       // ---- Bookings & payments ----
@@ -413,8 +419,9 @@ class DemoBackend {
       'organizer_name': organizer['full_name'],
       'organizer_pic': organizer['profile_picture'],
       'is_liked': _eventLikes.contains((viewerId, asInt(e['id']))),
-      // Hide private access codes from everyone except the organizer.
-      if (e['organizer_id'] != viewerId) 'access_code': null,
+      'has_joined': _eventGuests.contains((viewerId, asInt(e['id']))),
+      // Hide access codes and budgets from everyone except the organizer.
+      if (e['organizer_id'] != viewerId) ...{'access_code': null, 'budget': null},
     };
   }
 
@@ -438,6 +445,9 @@ class DemoBackend {
 
   http.Response _getEvent(int id, int myId) {
     final event = _find(_events, id, 'Event');
+    if (event['event_type'] == 'private' && event['organizer_id'] != myId && !_eventGuests.contains((myId, id))) {
+      return _error(403, 'You do not have access to this private event');
+    }
     event['view_count'] = asInt(event['view_count']) + 1;
     return _ok(_eventView(event, myId));
   }
@@ -484,13 +494,24 @@ class DemoBackend {
     return event;
   }
 
-  http.Response _joinEvent(int id, Json body) {
+  http.Response _joinEvent(int id, int myId, Json body) {
     final event = _find(_events, id, 'Event');
     if (event['event_type'] == 'private' &&
         asString(body['access_code']).trim().toUpperCase() != asString(event['access_code']).toUpperCase()) {
       return _error(403, 'That access code doesn\'t match this event.');
     }
+    if (event['organizer_id'] != myId) _eventGuests.add((myId, id));
     return _ok(null, "You're on the guest list! 🎉");
+  }
+
+  http.Response _joinEventByCode(int myId, Json body) {
+    final code = asString(body['access_code']).trim().toUpperCase();
+    final event = _events
+        .where((e) => e['event_type'] == 'private' && asString(e['access_code']).toUpperCase() == code)
+        .firstOrNull;
+    if (event == null) return _error(403, 'Invalid access code');
+    if (event['organizer_id'] != myId) _eventGuests.add((myId, asInt(event['id'])));
+    return _ok(_eventView(event, myId), "You're on the guest list! 🎉");
   }
 
   http.Response _likeEvent(int id, int myId) {
@@ -580,7 +601,7 @@ class DemoBackend {
     final quantity = max(1, asInt(body['quantity'], 1));
     final agreed = asDouble(service['base_price']) * quantity;
     final fee = double.parse((agreed * 0.05).toStringAsFixed(2));
-    final tax = double.parse((agreed * 0.16).toStringAsFixed(2));
+    const tax = 0.0;
     final id = _nextId(_bookings);
     final booking = {
       'id': id,
@@ -614,6 +635,12 @@ class DemoBackend {
     final isConsumer = booking['consumer_id'] == myId;
     if (!isVendor && !isConsumer) return _error(403, 'This booking isn\'t yours');
     if (status != 'completed' && !isVendor) return _error(403, 'Only the vendor can do that');
+    final paid = booking['payment_status'] == 'completed';
+    if (status == 'confirmed' && !paid) return _error(409, 'The customer has not paid for this booking yet');
+    if (status == 'rejected' && paid) {
+      booking['payment_status'] = 'refunded';
+      booking['amount_paid'] = 0;
+    }
     booking['booking_status'] = status;
     if (status == 'completed') {
       booking['vendor_payment_status'] = 'released';

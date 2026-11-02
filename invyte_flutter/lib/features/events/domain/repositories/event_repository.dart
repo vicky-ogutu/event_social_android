@@ -17,6 +17,9 @@ abstract interface class EventRepository {
   /// Returns a confirmation message from the server.
   Future<String> join(int id, {String accessCode = ''});
 
+  /// Joins the private event with this access code and returns it.
+  Future<Event> joinByCode(String accessCode);
+
   /// Returns whether the event is now liked.
   Future<bool> toggleLike(int id);
 

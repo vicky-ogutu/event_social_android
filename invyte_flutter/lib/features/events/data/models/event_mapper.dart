@@ -24,6 +24,7 @@ abstract final class EventMapper {
         viewCount: asInt(json['view_count']),
         likeCount: asInt(json['like_count']),
         isLiked: asBool(json['is_liked']),
+        hasJoined: asBool(json['has_joined']),
         organizerName: asStringOrNull(json['organizer_name']),
         organizerPic: asStringOrNull(json['organizer_pic']),
       );

@@ -131,7 +131,7 @@ class PriceBreakdown extends StatelessWidget {
     super.key,
     required this.subtotal,
     required this.serviceFee,
-    required this.tax,
+    this.tax = 0,
     required this.total,
     this.subtotalLabel = 'Service subtotal',
     this.estimate = false,
@@ -169,7 +169,7 @@ class PriceBreakdown extends StatelessWidget {
       children: [
         row(subtotalLabel, subtotal),
         row('Invyte service fee', serviceFee),
-        row('Taxes', tax),
+        if (tax > 0) row('Taxes', tax),
         const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider()),
         row(estimate ? 'Estimated total' : 'Total', total, bold: true),
         if (paid != null && paid! > 0) row('Paid', -paid!, color: AppColors.success),

@@ -268,7 +268,12 @@ class _EventFormState extends ConsumerState<_EventForm> {
               TextFormField(
                 controller: _accessCode,
                 textCapitalization: TextCapitalization.characters,
-                validator: (v) => _visibility == EventVisibility.private ? Validators.required(v, 'Access code') : null,
+                validator: (v) {
+                  if (_visibility != EventVisibility.private) return null;
+                  // A code saved before the format rule stays valid until it's changed.
+                  if (v?.trim().toUpperCase() == widget.initial?.accessCode) return null;
+                  return Validators.accessCode(v);
+                },
                 decoration: const InputDecoration(hintText: 'Access code, e.g. LOVE2026', prefixIcon: Icon(Icons.key_rounded)),
               ),
             ],

@@ -23,7 +23,7 @@ abstract final class BookingMapper {
         status: BookingStatus.parse(asStringOrNull(json['booking_status'])),
         specialRequests: asStringOrNull(json['special_requests']),
         eventName: asStringOrNull(json['event_name']),
-        vendorName: asStringOrNull(json['vendor_name']),
+        vendorName: asStringOrNull(json['vendor_name'] ?? json['vendor_business_name']),
         serviceName: asStringOrNull(json['service_name']),
         consumerName: asStringOrNull(json['consumer_name']),
       );

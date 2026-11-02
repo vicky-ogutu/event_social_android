@@ -40,6 +40,10 @@ class EventRepositoryImpl implements EventRepository {
       });
 
   @override
+  Future<Event> joinByCode(String accessCode) =>
+      guard(() async => EventMapper.fromJson(await _remote.joinByCode(accessCode.trim().toUpperCase())));
+
+  @override
   Future<bool> toggleLike(int id) => guard(() async => asBool((await _remote.toggleLike(id))['liked']));
 
   @override

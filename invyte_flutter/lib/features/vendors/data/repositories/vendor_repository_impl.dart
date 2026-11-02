@@ -46,6 +46,13 @@ class VendorRepositoryImpl implements VendorRepository {
       });
 
   @override
+  Future<bool> payoutsReady() => guard(() async => asBool((await _remote.payoutStatus())['ready']));
+
+  @override
+  Future<String> startPayoutOnboarding() =>
+      guard(() async => asString((await _remote.startPayoutOnboarding())['url']));
+
+  @override
   Future<List<VendorService>> myServices() =>
       guard(() async => asList(await _remote.myServices(), VendorMapper.service));
 

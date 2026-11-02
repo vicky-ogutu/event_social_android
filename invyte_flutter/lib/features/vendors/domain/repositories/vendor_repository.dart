@@ -18,6 +18,12 @@ abstract interface class VendorRepository {
 
   Future<VendorProfile> saveProfile(VendorProfileDraft draft, {required bool exists});
 
+  /// Whether Stripe can send this vendor money.
+  Future<bool> payoutsReady();
+
+  /// Returns the Stripe page where the vendor sets up payouts.
+  Future<String> startPayoutOnboarding();
+
   Future<List<VendorService>> myServices();
 
   Future<VendorService> createService(ServiceDraft draft);

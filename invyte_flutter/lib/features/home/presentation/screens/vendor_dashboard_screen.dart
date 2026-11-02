@@ -13,6 +13,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../bookings/presentation/providers/booking_providers.dart';
 import '../../../bookings/presentation/widgets/booking_actions.dart';
 import '../../../bookings/presentation/widgets/booking_widgets.dart';
+import '../../../events/presentation/widgets/join_with_code.dart';
 import '../../../vendors/presentation/providers/vendor_providers.dart';
 
 class VendorDashboardScreen extends ConsumerWidget {
@@ -148,6 +149,11 @@ class VendorDashboardScreen extends ConsumerWidget {
                       icon: Icons.photo_library_rounded,
                       label: 'Portfolio',
                       onTap: () => context.push(Routes.vendorPortfolio),
+                    ),
+                    _QuickAction(
+                      icon: Icons.key_rounded,
+                      label: 'Join event',
+                      onTap: () => joinEventWithCode(context, ref),
                     ),
                     _QuickAction(
                       icon: Icons.chat_rounded,

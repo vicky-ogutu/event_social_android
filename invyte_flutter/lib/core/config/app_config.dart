@@ -27,7 +27,6 @@ abstract final class AppConfig {
 
   /// Used only to show estimates before the server prices a booking.
   static const estimatedServiceFeeRate = 0.05;
-  static const estimatedTaxRate = 0.16;
 
   static const requestTimeout = Duration(seconds: 20);
 

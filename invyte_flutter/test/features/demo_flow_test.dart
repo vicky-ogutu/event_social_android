@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:invyte/core/di/core_providers.dart';
+import 'package:invyte/core/error/failure.dart';
 import 'package:invyte/features/auth/domain/entities/user.dart';
 import 'package:invyte/features/auth/presentation/providers/auth_providers.dart';
 import 'package:invyte/features/bookings/domain/entities/booking.dart';
@@ -127,5 +128,36 @@ void main() {
 
     expect(restored.read(currentUserProvider)?.email, 'amara@invyte.app');
     expect(restored.read(demoModeProvider), isTrue);
+  });
+
+  test('joining a public event records it and hides the budget', () async {
+    await container.read(authControllerProvider.notifier).startDemo(UserRole.consumer);
+    final repo = container.read(eventRepositoryProvider);
+
+    final before = await repo.getEvent(7);
+    expect(before.hasJoined, isFalse);
+    expect(before.budget, isNull);
+    expect((await repo.myEvents()).items.map((e) => e.id), isNot(contains(7)));
+
+    await repo.join(7);
+
+    expect((await repo.getEvent(7)).hasJoined, isTrue);
+    expect((await repo.myEvents()).items.map((e) => e.id), contains(7));
+  });
+
+  test('guest joins a private event with only its code', () async {
+    await container.read(authControllerProvider.notifier).startDemo(UserRole.consumer);
+    final repo = container.read(eventRepositoryProvider);
+
+    final discovered = await repo.discover();
+    expect(discovered.items.where((e) => e.id == 8), isEmpty);
+    await expectLater(repo.getEvent(8), throwsA(isA<Failure>()));
+    await expectLater(repo.joinByCode('NOPE99'), throwsA(isA<Failure>()));
+
+    final joined = await repo.joinByCode(' engage ');
+    expect(joined.id, 8);
+    expect(joined.accessCode, isNull);
+    expect((await repo.getEvent(8)).name, 'Kofi & Ama Engagement');
+    expect((await repo.myEvents()).items.map((e) => e.id), contains(8));
   });
 }

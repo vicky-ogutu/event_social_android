@@ -74,53 +74,17 @@ class _EventDetailBodyState extends ConsumerState<_EventDetailBody> {
   }
 
   Future<void> _join() async {
-    var code = '';
-    if (_event.isPrivate) {
-      final entered = await _askAccessCode();
-      if (entered == null) return;
-      code = entered;
-    }
     setState(() => _joining = true);
     try {
-      final message = await ref.read(eventRepositoryProvider).join(_event.id, accessCode: code);
-      if (mounted) showSnack(context, message);
+      final message = await ref.read(eventRepositoryProvider).join(_event.id);
+      if (!mounted) return;
+      showSnack(context, message);
+      invalidateEvents(ref, eventId: _event.id);
     } catch (e) {
       if (mounted) showErrorSnack(context, e);
     } finally {
       if (mounted) setState(() => _joining = false);
     }
-  }
-
-  Future<String?> _askAccessCode() {
-    final controller = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Private event'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Enter the access code from your invitation.'),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              textCapitalization: TextCapitalization.characters,
-              decoration: const InputDecoration(hintText: 'Access code', prefixIcon: Icon(Icons.key_rounded)),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            style: FilledButton.styleFrom(minimumSize: const Size(100, 44)),
-            child: const Text('Join'),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<void> _delete() async {
@@ -357,7 +321,8 @@ class _EventDetailBodyState extends ConsumerState<_EventDetailBody> {
             ),
           ],
         ),
-        if (!organizer)
+        // Only guests who already joined can open a private event.
+        if (!organizer && !e.isPrivate)
           Positioned(
             left: 0,
             right: 0,
@@ -378,7 +343,7 @@ class _EventDetailBodyState extends ConsumerState<_EventDetailBody> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(Fmt.date(e.date), style: theme.textTheme.titleSmall),
-                          Text(e.isPrivate ? 'Invitation only' : 'Free to join',
+                          Text(e.hasJoined ? "You're going" : 'Free to join',
                               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ),
@@ -386,9 +351,9 @@ class _EventDetailBodyState extends ConsumerState<_EventDetailBody> {
                     SizedBox(
                       width: 170,
                       child: PrimaryButton(
-                        label: e.isPrivate ? 'Join with code' : 'Join event',
+                        label: e.hasJoined ? 'Joined' : 'Join event',
                         loading: _joining,
-                        onPressed: _join,
+                        onPressed: e.hasJoined ? null : _join,
                       ),
                     ),
                   ],

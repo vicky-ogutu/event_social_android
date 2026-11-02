@@ -11,6 +11,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../events/domain/entities/event.dart';
 import '../../../events/presentation/providers/event_providers.dart';
 import '../../../events/presentation/widgets/event_cards.dart';
+import '../../../events/presentation/widgets/join_with_code.dart';
 import '../../../vendors/presentation/providers/vendor_providers.dart';
 import '../../../vendors/presentation/widgets/vendor_cards.dart';
 
@@ -82,6 +83,16 @@ class ConsumerHomeScreen extends ConsumerWidget {
             ),
             const SliverToBoxAdapter(
               child: Padding(padding: EdgeInsets.fromLTRB(20, 20, 20, 0), child: _PlanCard()),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                child: OutlinedButton.icon(
+                  onPressed: () => joinEventWithCode(context, ref),
+                  icon: const Icon(Icons.key_rounded),
+                  label: const Text('Join with code'),
+                ),
+              ),
             ),
 
             // ---- Categories ----
